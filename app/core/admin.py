@@ -24,3 +24,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(models.User, UserAdmin)
+
+@admin.register(models.Athlete)
+class AthleteAdmin(admin.ModelAdmin):
+    list_display = ('name', 'terra_id', 'api_id')
