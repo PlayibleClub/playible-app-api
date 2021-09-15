@@ -149,11 +149,12 @@ class AthleteSeason(BaseInfo):
         ordering = ['-created_at', '-updated_at']
 
 class Team(BaseInfo):
-    name = models.CharField(max_length=155)
+    location = models.CharField(max_length=155)
+    nickname = models.CharField(max_length=155)
     api_id = models.IntegerField()
 
     def __str__(self):
-        return self.name
+        return self.location + nickname
     
     class Meta:
         ordering = ['-created_at', '-updated_at']
