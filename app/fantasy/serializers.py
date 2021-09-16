@@ -101,7 +101,7 @@ class TeamSerializer(serializers.Serializer):
     return data
     
   def save(self):
-    team = models.Position(
+    team = models.Team(
       name = self.validated_data['location'],
       nickname = self.validated_data['nickname'],
       api_id = self.validated_data['api_id'],
@@ -111,4 +111,23 @@ class TeamSerializer(serializers.Serializer):
     return {
       'message': "Team added.",
       'id': team.pk
+    }
+
+class PositionSerializer(serializers.ModelSerializer):
+  """Serializer for position objects"""
+  class Meta:
+    model = models.Positions
+    fields = ['name', 'abbreviation']
+
+  def save(self):
+    position = models.Positions(
+      name = self.validated_data['name'],
+      abbreviation = self.validated_data['abbreviation'],
+    )
+
+    position.save()
+
+    return {
+      'message': "Position added.",
+      'id': position.pk
     }

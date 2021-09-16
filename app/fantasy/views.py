@@ -21,3 +21,21 @@ class TeamViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     #headers = self.get_success_headers(serializer.data)
     #return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     return Response(response, status=status.HTTP_201_CREATED)
+
+class PositionViewSet(generics.GenericAPIView):
+  serializer_class = serializers.PositionSerializer
+
+  def post(self, request):
+    serializer = serializers.PositionSerializer(data=request.data, context={'request':request})
+
+    if(serializer.is_valid()):
+        content = serializer.save()
+        return Response(content, status=status.HTTP_200_OK)
+    else:
+        content = serializer.errors
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    
+  def get(self):
+    queryset = models.Positions.objects.all()
+    serializer = serializers.PositionSerializer(queryset, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
