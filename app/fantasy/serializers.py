@@ -2,6 +2,7 @@ from rest_framework import serializers, status
 
 from core import models
 
+"""
 class AthleteSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Athlete
@@ -86,4 +87,28 @@ class PositionSerializer(serializers.ModelSerializer):
     return {
       'message': "Position added.",
       'id': position.pk
+    }
+  """
+
+class TeamSerializer(serializers.Serializer):
+  location = serializers.CharField(required=False, allow_null=True)
+  nickname = serializers.CharField(required=False, allow_null=True)
+
+  def validate(self, data):
+
+
+
+    return data
+    
+  def save(self):
+    team = models.Position(
+      name = self.validated_data['location'],
+      nickname = self.validated_data['nickname'],
+      api_id = self.validated_data['api_id'],
+    )
+
+    team.save()
+    return {
+      'message': "Team added.",
+      'id': team.pk
     }

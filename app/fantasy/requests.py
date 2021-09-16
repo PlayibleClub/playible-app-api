@@ -7,17 +7,21 @@ import sys
 import time
 
 LAG = 0    # seconds ahead of stats server
-HOST = 'http://api.stats.com/v1/stats/basketball/nba'
-PUBLIC_KEY = '' #load keys from env file
-SECRET_KEY = '' #load keys from env file
+HOST = 'http://api.stats.com/v1/stats/basketball/nba/'
+PUBLIC_KEY = os.environ.get('STATSPERFORM_PUBLIC_KEY', '')
+SECRET_KEY = os.environ.get('STATSPERFORM_PRIVATE_KEY', '')
 
-def http_get(url, args=[], stream=False):
+def get(url, args=[], stream=False):
   try:
     if args:
       params = dict(f.split('=') for f in args)
     else:
       params = {}
-    params.update(get_sig(url))
+
+    params.update(get_sig())
+
+    url = HOST + url
+
     return requests.get(
       url,
       params=params,
@@ -30,10 +34,7 @@ def http_get(url, args=[], stream=False):
     log.error('HTTP Connection Error when downloading: %s' % url)
     sys.exit(2)
 
-def get_sig(url):
-  league = url.replace(HOST, '').split('/')[0]
-  if league not in API.keys():
-    league = 'other'
+def get_sig():
   timestamp = repr(int(time.time()))
   all = str.encode(PUBLIC_KEY + SECRET_KEY + timestamp)
   signature = hashlib.sha256(all).hexdigest()
