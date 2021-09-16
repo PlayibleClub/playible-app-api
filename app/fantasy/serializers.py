@@ -1,6 +1,7 @@
 from rest_framework import serializers, status
 
 from core import models
+from core import utils
 
 """
 class AthleteSerializer(serializers.ModelSerializer):
@@ -90,19 +91,38 @@ class PositionSerializer(serializers.ModelSerializer):
     }
   """
 
+class TeamListSerializer(serializers.ListSerializer):
+  def save(self):
+    teams_list = []
+    for team_data in self.validated_data:
+      team = models.Team(
+        location = team_data['location'],
+        nickname = team_data['nickname'],
+        api_id = team_data['api_id'],
+      )
+      team.save()
+      teams_list.append(team)
+    return {
+      'message': "Teams added.",
+      'data': teams_list
+    }
+
+
+
 class TeamSerializer(serializers.Serializer):
   location = serializers.CharField(required=False, allow_null=True)
   nickname = serializers.CharField(required=False, allow_null=True)
+  api_id = serializers.IntegerField(required=False, allow_null=True)
+
+  class Meta:
+    list_serializer_class = TeamListSerializer
 
   def validate(self, data):
-
-
-
     return data
     
   def save(self):
     team = models.Position(
-      name = self.validated_data['location'],
+      location = self.validated_data['location'],
       nickname = self.validated_data['nickname'],
       api_id = self.validated_data['api_id'],
     )
