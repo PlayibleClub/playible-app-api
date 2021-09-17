@@ -1,4 +1,4 @@
-from rest_framework import serializers, status
+from rest_framework import serializers, status, validators
 
 from core import models
 from core import utils
@@ -107,28 +107,17 @@ class TeamListSerializer(serializers.ListSerializer):
       'data': teams_list
     }
 
+  #TODO: Handle updates if the data already exists
 
 
 class TeamSerializer(serializers.Serializer):
   location = serializers.CharField(required=False, allow_null=True)
   nickname = serializers.CharField(required=False, allow_null=True)
-  api_id = serializers.IntegerField(required=False, allow_null=True)
+  api_id = serializers.IntegerField(
+    required=False, 
+    allow_null=True,
+    validators=[validators.UniqueValidator(queryset=models.Team.objects.all())]
+  )
 
   class Meta:
     list_serializer_class = TeamListSerializer
-
-  def validate(self, data):
-    return data
-    
-  def save(self):
-    team = models.Position(
-      location = self.validated_data['location'],
-      nickname = self.validated_data['nickname'],
-      api_id = self.validated_data['api_id'],
-    )
-
-    team.save()
-    return {
-      'message': "Team added.",
-      'id': team.pk
-    }
