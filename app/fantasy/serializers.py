@@ -91,12 +91,13 @@ class PositionSerializer(serializers.ModelSerializer):
   """
 
 class TeamSerializer(serializers.Serializer):
-  # location = serializers.CharField(required=False, allow_null=True)
-  # nickname = serializers.CharField(required=False, allow_null=True)
-  class Meta:
-    model = models.Positions
-    fields = ['id', 'location', 'nickname', 'api_id']
-    read_only_fields = ('id',)
+  location = serializers.CharField(required=False, allow_null=True)
+  nickname = serializers.CharField(required=False, allow_null=True)
+  
+  # class Meta:
+  #   model = models.Positions
+  #   fields = ['id', 'location', 'nickname', 'api_id']
+  #   read_only_fields = ('id',)
 
   def validate(self, data):
 
