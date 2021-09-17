@@ -97,6 +97,7 @@ class Athlete(BaseInfo):
     terra_id = models.CharField(max_length=155)
     api_id = models.IntegerField()
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
+    # positions = models.ManyToManyField('Positions')
     jersey = models.IntegerField()
     is_active = models.BooleanField()
     is_injured = models.BooleanField()
@@ -154,7 +155,7 @@ class Team(BaseInfo):
     api_id = models.IntegerField()
 
     def __str__(self):
-        return self.location + nickname
+        return self.location + self.nickname
     
     class Meta:
         ordering = ['-created_at', '-updated_at']

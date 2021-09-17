@@ -91,8 +91,12 @@ class PositionSerializer(serializers.ModelSerializer):
   """
 
 class TeamSerializer(serializers.Serializer):
-  location = serializers.CharField(required=False, allow_null=True)
-  nickname = serializers.CharField(required=False, allow_null=True)
+  # location = serializers.CharField(required=False, allow_null=True)
+  # nickname = serializers.CharField(required=False, allow_null=True)
+  class Meta:
+    model = models.Positions
+    fields = ['id', 'location', 'nickname', 'api_id']
+    read_only_fields = ('id',)
 
   def validate(self, data):
 
@@ -117,7 +121,8 @@ class PositionSerializer(serializers.ModelSerializer):
   """Serializer for position objects"""
   class Meta:
     model = models.Positions
-    fields = ['name', 'abbreviation']
+    fields = ['id', 'name', 'abbreviation']
+    read_only_fields = ('id',)
 
   def save(self):
     position = models.Positions(
@@ -131,3 +136,67 @@ class PositionSerializer(serializers.ModelSerializer):
       'message': "Position added.",
       'id': position.pk
     }
+
+class AthleteSerializer(serializers.ModelSerializer):
+  """Serializer for athlete objects"""
+  team = serializers.PrimaryKeyRelatedField(
+      many = False,
+      queryset = models.Team.objects.all()
+  )
+
+  class Meta:
+    model = models.Athlete
+    fields = [
+      'id', 'name', 'terra_id', 'api_id',
+      'team', 'jersey',
+      'is_active', 'is_injured', 'is_suspended'
+    ]
+    read_only_fields = ('id',)
+
+  def save(self):
+    athlete = models.Positions(
+      name = self.validated_data['name'],
+      terra_id = self.validated_data['terra_id'],
+      api_id = self.validated_data['api_id'],
+      team = self.validated_data['team'],
+      jersey = self.validated_data['jersey'],
+      is_active = self.validated_data['is_active'],
+      is_injured = self.validated_data['is_injured'],
+      is_suspended = self.validated_data['is_suspended'],
+    )
+
+    athlete.save()
+
+    return {
+      'message': "Athlete added.",
+      'id': athlete.pk
+    }
+
+class AthletePositionSerializer(serializers.ModelSerializer):
+  """Serializer for athlete position objects"""
+  athlete = serializers.PrimaryKeyRelatedField(
+      many = False,
+      queryset = models.Athlete.objects.all()
+  )
+  position = serializers.PrimaryKeyRelatedField(
+      many = True,
+      queryset = models.Positions.objects.all()
+  )
+
+  class Meta:
+    model = models.AthletePositions
+    fields = ['athlete', 'position']
+
+  def save(self):
+    athlete_position = models.Positions(
+      athlete = self.validated_data['athlete'],
+      position = self.validated_data['position'],
+    )
+
+    athlete_position.save()
+
+    return {
+      'message': "Athlete Position added.",
+      'id': athlete_position.pk
+    }
+    
