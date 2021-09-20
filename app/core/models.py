@@ -139,6 +139,7 @@ class Season(BaseInfo):
 class AthleteSeason(BaseInfo):
     athlete = models.ForeignKey("Athlete", on_delete=models.CASCADE)
     season = models.ForeignKey("Season", on_delete=models.CASCADE)
+    fantasy_score = models.DecimalField(max_digits=19, decimal_places=10)
     points = models.DecimalField(max_digits=19, decimal_places=10)
     rebounds = models.DecimalField(max_digits=19, decimal_places=10)
     assists = models.DecimalField(max_digits=19, decimal_places=10)

@@ -95,19 +95,21 @@ class TeamListSerializer(serializers.ListSerializer):
   def save(self):
     teams_list = []
     for team_data in self.validated_data:
-      team = models.Team(
-        location = team_data['location'],
-        nickname = team_data['nickname'],
+      team, is_created = models.Team.objects.get_or_create(
         api_id = team_data['api_id'],
+        defaults = {
+          'location': team_data['location'],
+          'nickname': team_data['nickname'],
+        }
       )
-      team.save()
-      teams_list.append(team)
+      teams_list.append({
+        "is_created": is_created,
+        "data": team
+      })
     return {
       'message': "Teams added.",
       'data': teams_list
     }
-
-  #TODO: Handle updates if the data already exists
 
 
 class TeamSerializer(serializers.Serializer):
@@ -115,8 +117,7 @@ class TeamSerializer(serializers.Serializer):
   nickname = serializers.CharField(required=False, allow_null=True)
   api_id = serializers.IntegerField(
     required=False, 
-    allow_null=True,
-    validators=[validators.UniqueValidator(queryset=models.Team.objects.all())]
+    allow_null=True
   )
 
   class Meta:
