@@ -1,8 +1,9 @@
-from rest_framework import serializers, status
+from rest_framework import serializers, status, validators
 
 from core import models
+from core import utils
 
-"""
+
 class AthleteSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Athlete
@@ -35,7 +36,7 @@ class AthleteSerializer(serializers.ModelSerializer):
       is_suspended = self.validated_data['is_suspended'],
     )
     athlete.save()
-
+    """
     # save positions data on AthletePositions
     for position_data in self.validated_data['positions']:
       position = models.AthletePositions(
@@ -43,12 +44,13 @@ class AthleteSerializer(serializers.ModelSerializer):
         position = position_data
       )
       position.save()
-
+    """
     return {
       'message': "Athlete added.",
       'id': athlete.pk
     }
 
+"""
 class PositionSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Position
@@ -88,35 +90,39 @@ class PositionSerializer(serializers.ModelSerializer):
       'message': "Position added.",
       'id': position.pk
     }
-  """
+"""
 
-class TeamSerializer(serializers.ModelSerializer):
-  # location = serializers.CharField(required=False, allow_null=True)
-  # nickname = serializers.CharField(required=False, allow_null=True)
-  
-  class Meta:
-    model = models.Team
-    fields = ['id', 'location', 'nickname', 'api_id']
-    read_only_fields = ('id',)
-
-  def validate(self, data):
-
-
-
-    return data
-    
+class TeamListSerializer(serializers.ListSerializer):
   def save(self):
-    team = models.Team(
-      location = self.validated_data['location'],
-      nickname = self.validated_data['nickname'],
-      api_id = self.validated_data['api_id'],
-    )
-
-    team.save()
+    teams_list = []
+    for team_data in self.validated_data:
+      team, is_created = models.Team.objects.get_or_create(
+        api_id = team_data['api_id'],
+        defaults = {
+          'location': team_data['location'],
+          'nickname': team_data['nickname'],
+        }
+      )
+      teams_list.append({
+        "is_created": is_created,
+        "data": team
+      })
     return {
-      'message': "Team added.",
-      'id': team.pk
+      'message': "Teams added.",
+      'data': teams_list
     }
+
+
+class TeamSerializer(serializers.Serializer):
+  location = serializers.CharField(required=False, allow_null=True)
+  nickname = serializers.CharField(required=False, allow_null=True)
+  api_id = serializers.IntegerField(
+    required=False, 
+    allow_null=True
+  )
+
+  class Meta:
+    list_serializer_class = TeamListSerializer
 
 class PositionSerializer(serializers.ModelSerializer):
   """Serializer for position objects"""
