@@ -45,12 +45,6 @@ class BaseViewSet(viewsets.GenericViewSet,
     return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-class TeamViewSet(BaseViewSet):
-  """Manage teams in the database"""
-  queryset = models.Team.objects.all()
-  serializer_class = serializers.TeamSerializer
-
-
 class PositionViewSet(BaseViewSet):
   """Manage positions in the database"""
   queryset = models.Positions.objects.all()
