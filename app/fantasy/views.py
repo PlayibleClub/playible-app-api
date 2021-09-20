@@ -78,11 +78,11 @@ class ContractViewSet(BaseViewSet):
     table_object = self.get_object()
     data = request.data
 
-    try:
-      athlete_id = models.Athlete.objects.get(id=data["id"])
-      table_object.athlete_id = athlete_id
-    except KeyError:
-      pass
+    # try:
+    #   athlete_id = models.Athlete.objects.get(id=data["id"])
+    #   table_object.athlete_id = athlete_id
+    # except KeyError:
+    #   pass
  
     table_object.name = data.get("name", table_object.name)
     table_object.symbol = data.get("symbol", table_object.symbol)

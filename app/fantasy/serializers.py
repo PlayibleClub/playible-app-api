@@ -109,12 +109,12 @@ class ContractSerializer(serializers.ModelSerializer):
   """Serializer for contract objects"""
   class Meta:
     model = models.AssetContract
-    fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
+    fields = ['id', 'name', 'symbol','contract_addr']
     read_only_fields = ('id',)
 
   def save(self):
     contract = models.AssetContract(
-      athlete_id = self.validated_data['athlete_id'],
+      # athlete_id = self.validated_data['athlete_id'],
       name = self.validated_data['name'],
       symbol = self.validated_data['symbol'],
       contract_addr = self.validated_data['contract_addr'],

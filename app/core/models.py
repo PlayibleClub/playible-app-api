@@ -56,7 +56,7 @@ class Account(BaseInfo):
     ordering = ['-created_at', '-updated_at']
 
 class AssetContract(BaseInfo):
-  athlete_id = models.ForeignKey("Athlete", on_delete=models.CASCADE)
+  # athlete_id = models.ForeignKey("Athlete", on_delete=models.CASCADE)
   symbol = models.CharField(max_length=155, unique=True)
   name = models.CharField(max_length=155)
   contract_addr = models.CharField(max_length=155)
