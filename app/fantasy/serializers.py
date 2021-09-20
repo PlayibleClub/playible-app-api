@@ -126,4 +126,23 @@ class ContractSerializer(serializers.ModelSerializer):
       'id': contract.pk
     }
 
-    
+class AccountSerializer(serializers.ModelSerializer):
+  """Serializer for account objects"""
+  class Meta:
+    model = models.Account
+    fields = ['id', 'username', 'wallet_addr', 'image_url']
+    read_only_fields = ('id',)
+
+  def save(self):
+    account = models.Account(
+      username = self.validated_data['username'],
+      wallet_addr = self.validated_data['wallet_addr'],
+      image_url = self.validated_data['image_url'],
+    )
+
+    account.save()
+
+    return {
+      'message': "Account added.",
+      'id': account.pk
+    }
