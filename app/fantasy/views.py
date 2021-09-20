@@ -24,22 +24,47 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 
 class BaseViewSet(viewsets.GenericViewSet, 
                   mixins.ListModelMixin,
-                  mixins.CreateModelMixin):
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,):
   """Base viewset for table attributes"""
 
   def perform_create(self, serializer): 
     """Create a new object"""
     if(serializer.is_valid()):
         content = serializer.save()
-        return Response(content, status=status.HTTP_200_OK)
+        return Response(content, status=status.HTTP_201_CREATED)
     else:
         content = serializer.errors
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
+  
+  def retrieve(self, request, *args, **kwargs):
+    return super().retrieve(request, *args, **kwargs)
+
+  def update(self, request, *args, **kwargs):
+    return Response(status=status.HTTP_403_FORBIDDEN)
 
 class PositionViewSet(BaseViewSet):
   """Manage positions in the database"""
   queryset = models.Positions.objects.all()
   serializer_class = serializers.PositionSerializer
+
+  def partial_update(self, request, *args, **kwargs):
+    position = self.get_object()
+    data = request.data
+
+    position.name = data.get("name", position.name)
+    position.abbreviation = data.get("abbreviation", position.abbreviation)
+
+    position.save()
+    serializer = serializers.PositionSerializer(position, data, partial=True)
+    
+    if(serializer.is_valid()):
+        return Response(serializer.data, status.HTTP_200_OK)
+    else:
+        content = serializer.errors
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
 
 class AthleteViewSet(viewsets.ModelViewSet):
   """Manage athletes in the database"""
@@ -65,11 +90,11 @@ class AthleteViewSet(viewsets.ModelViewSet):
 
     return queryset
 
-  def create(self, serializer): 
+  def perform_create(self, serializer): 
     """Create a new athlete"""
     if(serializer.is_valid()):
       content = serializer.save()
-      return Response(content, status=status.HTTP_200_OK)
+      return Response(content, status=status.HTTP_201_CREATED)
     else:
       content = serializer.errors
       return Response(content, status=status.HTTP_400_BAD_REQUEST)

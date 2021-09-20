@@ -110,7 +110,7 @@ class Athlete(BaseInfo):
         ordering = ['-created_at', '-updated_at']
 
 class Positions(BaseInfo):
-    name = models.CharField(max_length=155, unique=True)
+    name = models.CharField(max_length=155)
     abbreviation = models.CharField(max_length=2, unique=True)
     
     def __str__(self):
