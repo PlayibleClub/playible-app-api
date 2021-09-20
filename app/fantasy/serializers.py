@@ -3,7 +3,7 @@ from rest_framework import serializers, status, validators
 from core import models
 from core import utils
 
-"""
+
 class AthleteSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Athlete
@@ -50,6 +50,7 @@ class AthleteSerializer(serializers.ModelSerializer):
       'id': athlete.pk
     }
 
+"""
 class PositionSerializer(serializers.ModelSerializer):
   class Meta:
     model = models.Position
@@ -89,7 +90,7 @@ class PositionSerializer(serializers.ModelSerializer):
       'message': "Position added.",
       'id': position.pk
     }
-  """
+"""
 
 class TeamListSerializer(serializers.ListSerializer):
   def save(self):
@@ -122,3 +123,64 @@ class TeamSerializer(serializers.Serializer):
 
   class Meta:
     list_serializer_class = TeamListSerializer
+
+class PositionSerializer(serializers.ModelSerializer):
+  """Serializer for position objects"""
+  class Meta:
+    model = models.Positions
+    fields = ['id', 'name', 'abbreviation']
+    read_only_fields = ('id',)
+
+  def save(self):
+    position = models.Positions(
+      name = self.validated_data['name'],
+      abbreviation = self.validated_data['abbreviation'],
+    )
+
+    position.save()
+
+    return {
+      'message': "Position added.",
+      'id': position.pk
+    }
+
+class AthleteSerializer(serializers.ModelSerializer):
+  """Serializer for athlete objects"""
+  team = serializers.PrimaryKeyRelatedField(
+      many = False,
+      queryset = models.Team.objects.all()
+  )
+  positions = serializers.PrimaryKeyRelatedField(
+      many = True,
+      queryset = models.Positions.objects.all()
+  )
+
+  class Meta:
+    model = models.Athlete
+    fields = [
+      'id', 'name', 'terra_id', 'api_id',
+      'team', 'positions', 'jersey',
+      'is_active', 'is_injured', 'is_suspended'
+    ]
+    read_only_fields = ('id',)
+
+  def save(self):
+    athlete = models.Athlete(
+      name = self.validated_data['name'],
+      terra_id = self.validated_data['terra_id'],
+      api_id = self.validated_data['api_id'],
+      team = self.validated_data['team'],
+      positions = self.validated_data['positions'],
+      jersey = self.validated_data['jersey'],
+      is_active = self.validated_data['is_active'],
+      is_injured = self.validated_data['is_injured'],
+      is_suspended = self.validated_data['is_suspended'],
+    )
+
+    athlete.save()
+
+    return {
+      'message': "Athlete added.",
+      'id': athlete.pk
+    }
+    
