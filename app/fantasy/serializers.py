@@ -104,6 +104,7 @@ class PositionSerializer(serializers.ModelSerializer):
       'id': position.pk
     }
 
+
 class ContractSerializer(serializers.ModelSerializer):
   """Serializer for contract objects"""
   class Meta:
@@ -126,6 +127,7 @@ class ContractSerializer(serializers.ModelSerializer):
       'id': contract.pk
     }
 
+
 class AccountSerializer(serializers.ModelSerializer):
   """Serializer for account objects"""
   class Meta:
@@ -145,4 +147,26 @@ class AccountSerializer(serializers.ModelSerializer):
     return {
       'message': "Account added.",
       'id': account.pk
+    }
+
+class AssetSerializer(serializers.ModelSerializer):
+  """Serializer for account objects"""
+  class Meta:
+    model = models.Asset
+    fields = ['id', 'name', 'owner', 'contract', 'image_url']
+    read_only_fields = ('id',)
+
+  def save(self):
+    asset = models.Asset(
+      name = self.validated_data['name'],
+      owner = self.validated_data['owner'],
+      contract = self.validated_data['contract'],
+      image_url = self.validated_data['image_url'],
+    )
+
+    asset.save()
+
+    return {
+      'message': "Asset added.",
+      'id': asset.pk
     }

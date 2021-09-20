@@ -121,4 +121,38 @@ class AccountViewset(BaseViewSet):
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AssetViewset(BaseViewSet):
+  """Manage assets in the database"""
+  queryset = models.Asset.objects.all()
+  serializer_class = serializers.AssetSerializer
+
+  def partial_update(self, request, *args, **kwargs):
+    table_object = self.get_object()
+    data = request.data
+
+    try:
+      owner = models.Account.objects.get(id=data["id"])
+      table_object.owner = owner
+    except KeyError:
+      pass
+
+    try:
+      contract = models.AssetContract.objects.get(id=data["id"])
+      table_object.contract = contract
+    except KeyError:
+      pass
+ 
+    table_object.name = data.get("name", table_object.name)
+    table_object.image_url = data.get("image_url", table_object.image_url)
+
+    table_object.save()
+    serializer = serializers.AssetSerializer(table_object, data, partial=True)
+    
+    if(serializer.is_valid()):
+        return Response(serializer.data, status.HTTP_200_OK)
+    else:
+        content = serializer.errors
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
     
