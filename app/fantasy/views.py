@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from core import models
 from fantasy import requests
 from fantasy import serializers
+from core import utils
 
 class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   queryset = models.Team.objects.all()

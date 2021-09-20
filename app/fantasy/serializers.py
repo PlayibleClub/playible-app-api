@@ -36,7 +36,7 @@ class AthleteSerializer(serializers.ModelSerializer):
       is_suspended = self.validated_data['is_suspended'],
     )
     athlete.save()
-
+    """
     # save positions data on AthletePositions
     for position_data in self.validated_data['positions']:
       position = models.AthletePositions(
@@ -44,7 +44,7 @@ class AthleteSerializer(serializers.ModelSerializer):
         position = position_data
       )
       position.save()
-
+    """
     return {
       'message': "Athlete added.",
       'id': athlete.pk
