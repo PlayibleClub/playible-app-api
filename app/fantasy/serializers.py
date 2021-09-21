@@ -125,8 +125,6 @@ class AthleteSerializer(serializers.ModelSerializer):
     ]
     
   def save(self):
-    print("###############################################################")
-    print(self.validated_data)
     athlete = models.Athlete(
       first_name = self.validated_data['first_name'],
       last_name = self.validated_data['last_name'],
