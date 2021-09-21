@@ -135,15 +135,7 @@ class AthleteSerializer(serializers.ModelSerializer):
     )
     athlete.save()
     athlete.positions.set(self.validated_data['positions'])
-    """
-    # save positions data on AthletePositions
-    for position_data in self.validated_data['positions']:
-      position = models.AthletePositions(
-        athlete = athlete
-        position = position_data
-      )
-      position.save()
-    """
+    
     return {
       'message': "Athlete added.",
       'id': athlete.pk
