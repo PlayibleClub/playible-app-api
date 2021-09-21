@@ -24,8 +24,12 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Team)
+admin.site.register(models.Positions)
 
 @admin.register(models.Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('name', 'terra_id', 'api_id')
+    list_display = ('first_name', 'last_name', 'terra_id', 'api_id')
+
+@admin.register(models.Team)
+class AthleteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'location', 'nickname')
