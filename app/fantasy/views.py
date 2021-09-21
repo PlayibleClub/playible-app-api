@@ -78,13 +78,41 @@ class ContractViewSet(BaseViewSet):
     table_object = self.get_object()
     data = request.data
 
-    table_object.athlete_id = data.get("athlete_id", table_object.athlete_id)
+    try:
+      athlete_id = models.Athlete.objects.get(id=data["id"])
+      table_object.athlete_id = athlete_id
+    except KeyError:
+      pass
+ 
     table_object.name = data.get("name", table_object.name)
     table_object.symbol = data.get("symbol", table_object.symbol)
     table_object.contract_addr = data.get("contract_addr", table_object.contract_addr)
 
     table_object.save()
     serializer = serializers.ContractSerializer(table_object, data, partial=True)
+    
+    if(serializer.is_valid()):
+        return Response(serializer.data, status.HTTP_200_OK)
+    else:
+        content = serializer.errors
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AccountViewset(BaseViewSet):
+  """Manage accounts in the database"""
+  queryset = models.Account.objects.all()
+  serializer_class = serializers.AccountSerializer
+
+  def partial_update(self, request, *args, **kwargs):
+    table_object = self.get_object()
+    data = request.data
+ 
+    table_object.username = data.get("username", table_object.username)
+    table_object.wallet_addr = data.get("wallet_addr", table_object.wallet_addr)
+    table_object.image_url = data.get("image_url", table_object.image_url)
+
+    table_object.save()
+    serializer = serializers.AccountSerializer(table_object, data, partial=True)
     
     if(serializer.is_valid()):
         return Response(serializer.data, status.HTTP_200_OK)

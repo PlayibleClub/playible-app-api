@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register(r'team', views.TeamViewSet)
 router.register(r'positions', views.PositionViewSet)
 router.register(r'contracts', views.ContractViewSet)
+router.register(r'accounts', views.AccountViewset)
 # router.register(r'athlete', views.AthleteViewSet)
 
 urlpatterns = [
