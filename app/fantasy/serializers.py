@@ -81,28 +81,30 @@ class TeamSerializer(serializers.ModelSerializer):
     list_serializer_class = TeamListSerializer
 
 class PositionSerializer(serializers.ModelSerializer):
-  """Serializer for position objects"""
+  name = serializers.CharField()
+  abbreviation = serializers.CharField()
+
   class Meta:
     model = models.Positions
     fields = ['id', 'name', 'abbreviation']
-    read_only_fields = ('id',)
+    read_only_fields = ['id']
 
   def save(self):
-    position = models.Positions(
+    position, is_created = models.Positions.objects.get_or_create(
       name = self.validated_data['name'],
       abbreviation = self.validated_data['abbreviation'],
     )
-
-    position.save()
 
     return {
       'message': "Position added.",
       'id': position.pk
     }
-    
-class AthleteSerializer(serializers.ModelSerializer):
-  team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
-  positions = serializers.PrimaryKeyRelatedField(queryset=models.Positions.objects.all(), many=True)
+
+#Serializer for Stats Perform API data
+class AthleteAPISerializer(serializers.ModelSerializer):
+  #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
+  #positions = serializers.PrimaryKeyRelatedField(queryset=models.Positions.objects.all(), many=True)
+  positions = PositionSerializer(many=True)
 
   class Meta:
     model = models.Athlete
@@ -123,20 +125,76 @@ class AthleteSerializer(serializers.ModelSerializer):
       'is_injured',
       'is_suspended'
     ]
+
+  def validate(self, data):
+    positions_id_list = []
+
+    for position_data in data['positions']:
+      position, is_created = models.Positions.objects.get_or_create(
+        name=position_data['name'], 
+        abbreviation=position_data['abbreviation'],
+      )
+
+      positions_id_list.append(position)
+
+    data['positions'] = positions_id_list
+    print("VALIDATED")
+
+    return data
     
   def save(self):
-    athlete = models.Athlete(
-      first_name = self.validated_data['first_name'],
-      last_name = self.validated_data['last_name'],
-      terra_id = self.validated_data['terra_id'],
-      api_id = self.validated_data['api_id'],
-      jersey = self.validated_data['jersey'],
-      team = self.validated_data['team'],
-    )
+    if self.instance is not None:
+      athlete = self.instance
+      athlete.first_name = self.validated_data.get('first_name'),
+      athlete.last_name = self.validated_data.get('last_name'),
+      athlete.terra_id = self.validated_data.get('terra_id', self.instance.terra_id),
+      athlete.api_id = self.validated_data.get('api_id'),
+      athlete.team = self.validated_data.get('team'),
+    else:
+      athlete = models.Athlete(
+        first_name = self.validated_data['first_name'],
+        last_name = self.validated_data['last_name'],
+        terra_id = self.validated_data['terra_id'],
+        api_id = self.validated_data['api_id'],
+        team = self.validated_data['team'],
+      )
     athlete.save()
     athlete.positions.set(self.validated_data['positions'])
-    
+
     return {
       'message': "Athlete added.",
       'id': athlete.pk
     }
+
+class AthleteSerializer(serializers.ModelSerializer):
+  api_id = serializers.IntegerField(
+    required=False, 
+    allow_null=True
+  )
+  team = TeamSerializer(required=False)
+  positions = PositionSerializer(many=True)
+
+  class Meta:
+    model = models.Athlete
+    fields = [
+      'id',
+      'first_name',
+      'last_name',
+      'terra_id',
+      'api_id',
+      'team',
+      'positions',
+      'jersey',
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]
+    read_only_fields = [
+      'id',
+      'team',
+      'positions',
+      'jersey',
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]

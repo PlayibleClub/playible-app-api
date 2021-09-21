@@ -18,6 +18,47 @@ def parse_team_list_data(data):
   except:
     print_debug("Invalid team data")
 
+def filter_participant_data(data, participant):
+  try: 
+    player_list = data.get('league').get('players')
+    for player in player_list:
+      if participant.get('api_id', None) is not None:
+        if player.get('playerId') == participant.get('api_id'):
+          return {
+            'first_name': player.get('firstName'),
+            'last_name': player.get('lastName'),
+            'terra_id': participant.get('terra_id'),
+            'api_id': player.get('playerId'),
+            'team': player.get('team').get('teamId'),
+            'positions': player.get('positions'),
+            'is_active': player.get('isActive'),
+            'is_injured': player.get('isInjured'),
+            'is_suspended': player.get('isSuspended')
+          }
+      else:
+        if player.get('firstName', '').lower() == participant.get('first_name').lower() and player.get('lastName', '').lower() == participant.get('last_name').lower():
+          return {
+            'first_name': player.get('firstName'),
+            'last_name': player.get('lastName'),
+            'terra_id': participant.get('terra_id'),
+            'api_id': player.get('playerId'),
+            'team': player.get('team').get('teamId'),
+            'positions': player.get('positions'),
+            'is_active': player.get('isActive'),
+            'is_injured': player.get('isInjured'),
+            'is_suspended': player.get('isSuspended')
+          }
+    return {
+      "error": "No matching data found"
+    }
+      
+  except Exception:
+    print_debug("Invalid participant data")
+    return {
+      "error": Exception,
+      "message": "Invalid participant data"
+    }
+
 #Use this for printing
 def print_debug(string):
     if(settings.DEBUG):
