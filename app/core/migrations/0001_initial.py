@@ -20,22 +20,8 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
                 ('username', models.CharField(max_length=155)),
-                ('wallet_address', models.CharField(max_length=155, unique=True)),
+                ('wallet_addr', models.CharField(max_length=155, unique=True)),
                 ('image_url', models.CharField(blank=True, max_length=155, null=True)),
-            ],
-            options={
-                'ordering': ['-created_at', '-updated_at'],
-            },
-        ),
-        migrations.CreateModel(
-            name='AssetContract',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('name', models.CharField(max_length=155)),
-                ('symbol', models.CharField(max_length=155)),
-                ('contract_addr', models.CharField(max_length=155)),
             ],
             options={
                 'ordering': ['-created_at', '-updated_at'],
@@ -80,7 +66,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('name', models.CharField(max_length=155, unique=True)),
+                ('name', models.CharField(max_length=155)),
                 ('abbreviation', models.CharField(max_length=2, unique=True)),
             ],
             options={
@@ -143,6 +129,21 @@ class Migration(migrations.Migration):
             model_name='athlete',
             name='team',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.team'),
+        ),
+        migrations.CreateModel(
+            name='AssetContract',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
+                ('updated_at', models.DateTimeField(auto_now=True, null=True)),
+                ('symbol', models.CharField(max_length=155, unique=True)),
+                ('name', models.CharField(max_length=155)),
+                ('contract_addr', models.CharField(max_length=155)),
+                ('athlete_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.athlete')),
+            ],
+            options={
+                'ordering': ['-created_at', '-updated_at'],
+            },
         ),
         migrations.CreateModel(
             name='Asset',

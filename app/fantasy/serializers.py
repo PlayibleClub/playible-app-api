@@ -3,48 +3,6 @@ from rest_framework import serializers, status, validators
 from core import models
 from core import utils
 
-"""
-class PositionSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = models.Position
-    fields = [
-      'name',
-      'abbreviation'
-    ]
-    
-  def save(self):
-    position = models.Position(
-      name = self.validated_data['name'],
-      abbreviation = self.validated_data['abbreviation'],
-    )
-
-    position.save()
-    return {
-      'message': "Position added.",
-      'id': position.pk
-    }
-
-class PositionSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = models.Position
-    fields = [
-      'name',
-      'abbreviation'
-    ]
-    
-  def save(self):
-    position = models.Position(
-      name = self.validated_data['name'],
-      abbreviation = self.validated_data['abbreviation'],
-    )
-
-    position.save()
-    return {
-      'message': "Position added.",
-      'id': position.pk
-    }
-"""
-
 class TeamListSerializer(serializers.ListSerializer):
   def save(self):
     teams_list = []
@@ -79,6 +37,7 @@ class TeamSerializer(serializers.ModelSerializer):
     fields = ['id', 'location', 'nickname', 'api_id']
     read_only_fields = ['id']
     list_serializer_class = TeamListSerializer
+
 
 class PositionSerializer(serializers.ModelSerializer):
   name = serializers.CharField()
@@ -162,8 +121,8 @@ class AthleteAPISerializer(serializers.ModelSerializer):
     athlete.positions.set(self.validated_data['positions'])
 
     return {
-      'message': "Athlete added.",
-      'id': athlete.pk
+      'message': "Contract Asset added.",
+      'id': contract.pk
     }
 
 class AthleteSerializer(serializers.ModelSerializer):
@@ -198,3 +157,46 @@ class AthleteSerializer(serializers.ModelSerializer):
       'is_injured',
       'is_suspended'
     ]
+
+class AccountSerializer(serializers.ModelSerializer):
+  """Serializer for account objects"""
+  class Meta:
+    model = models.Account
+    fields = ['id', 'username', 'wallet_addr', 'image_url']
+    read_only_fields = ('id',)
+
+  def save(self):
+    account = models.Account(
+      username = self.validated_data['username'],
+      wallet_addr = self.validated_data['wallet_addr'],
+      image_url = self.validated_data['image_url'],
+    )
+
+    account.save()
+
+    return {
+      'message': "Account added.",
+      'id': account.pk
+    }
+
+class AssetSerializer(serializers.ModelSerializer):
+  """Serializer for account objects"""
+  class Meta:
+    model = models.Asset
+    fields = ['id', 'name', 'owner', 'contract', 'image_url']
+    read_only_fields = ('id',)
+
+  def save(self):
+    asset = models.Asset(
+      name = self.validated_data['name'],
+      owner = self.validated_data['owner'],
+      contract = self.validated_data['contract'],
+      image_url = self.validated_data['image_url'],
+    )
+
+    asset.save()
+
+    return {
+      'message': "Asset added.",
+      'id': asset.pk
+    }

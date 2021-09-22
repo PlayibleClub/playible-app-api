@@ -46,7 +46,7 @@ class BaseInfo(models.Model):
 
 class Account(BaseInfo):
   username = models.CharField(max_length=155)
-  wallet_address = models.CharField(max_length=155, unique=True)
+  wallet_addr = models.CharField(max_length=155, unique=True)
   image_url = models.CharField(max_length=155, null=True, blank=True)
 
   def __str__(self):
@@ -56,8 +56,9 @@ class Account(BaseInfo):
     ordering = ['-created_at', '-updated_at']
 
 class AssetContract(BaseInfo):
+  athlete_id = models.ForeignKey("Athlete", on_delete=models.CASCADE)
+  symbol = models.CharField(max_length=155, unique=True)
   name = models.CharField(max_length=155)
-  symbol = models.CharField(max_length=155)
   contract_addr = models.CharField(max_length=155)
   
   def __str__(self):
@@ -94,7 +95,7 @@ class AssetProperties(BaseInfo):
 
 
 class Positions(BaseInfo):
-    name = models.CharField(max_length=155, unique=True)
+    name = models.CharField(max_length=155)
     abbreviation = models.CharField(max_length=2, unique=True)
     
     def __str__(self):
