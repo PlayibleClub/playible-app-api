@@ -138,18 +138,18 @@ class AthleteAPISerializer(serializers.ModelSerializer):
       positions_id_list.append(position)
 
     data['positions'] = positions_id_list
-    print("VALIDATED")
 
     return data
     
   def save(self):
     if self.instance is not None:
       athlete = self.instance
-      athlete.first_name = self.validated_data.get('first_name'),
-      athlete.last_name = self.validated_data.get('last_name'),
-      athlete.terra_id = self.validated_data.get('terra_id', self.instance.terra_id),
-      athlete.api_id = self.validated_data.get('api_id'),
-      athlete.team = self.validated_data.get('team'),
+      team = models.Team.objects.get(api_id=self.validated_data.get('team').id)
+      athlete.first_name = self.validated_data.get('first_name')
+      athlete.last_name = self.validated_data.get('last_name')
+      athlete.terra_id = self.validated_data.get('terra_id', self.instance.terra_id)
+      athlete.api_id = self.validated_data.get('api_id')
+      athlete.team = team
     else:
       athlete = models.Athlete(
         first_name = self.validated_data['first_name'],
@@ -171,8 +171,8 @@ class AthleteSerializer(serializers.ModelSerializer):
     required=False, 
     allow_null=True
   )
-  team = TeamSerializer(required=False)
-  positions = PositionSerializer(many=True)
+  #team = TeamSerializer(required=False)
+  #positions = PositionSerializer(many=True)
 
   class Meta:
     model = models.Athlete

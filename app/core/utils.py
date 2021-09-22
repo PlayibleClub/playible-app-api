@@ -19,7 +19,7 @@ def parse_team_list_data(data):
     print_debug("Invalid team data")
 
 def filter_participant_data(data, participant):
-  try: 
+  try:
     player_list = data.get('league').get('players')
     for player in player_list:
       if participant.get('api_id', None) is not None:

@@ -93,7 +93,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
   def partial_update(self, request, pk=None):
     athlete = self.get_object()
     response = requests.get('participants/')
-    athlete_data = utils.filter_participant_data(response['response'], request.data)
+    athlete_data = utils.filter_participant_data(response['response'], {'api_id': athlete.api_id, 'terra_id': request.data.get('terra_id')})
     serializer = serializers.AthleteAPISerializer(athlete, data=athlete_data, partial=True)
     
     if(serializer.is_valid()):
