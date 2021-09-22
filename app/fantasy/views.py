@@ -89,18 +89,7 @@ class ContractViewSet(BaseViewSet):
     table_object.name = data.get("name", table_object.name)
     table_object.symbol = data.get("symbol", table_object.symbol)
     table_object.contract_addr = data.get("contract_addr", table_object.contract_addr)
-
-  def create(self, serializer): 
-    #Create a new athlete
     table_object.save()
-    serializer = serializers.ContractSerializer(table_object, data, partial=True)
-    
-    if(serializer.is_valid()):
-        return Response(serializer.data, status.HTTP_200_OK)
-    else:
-        content = serializer.errors
-        return Response(content, status=status.HTTP_400_BAD_REQUEST)
-
 
 class AccountViewset(BaseViewSet):
   """Manage accounts in the database"""
