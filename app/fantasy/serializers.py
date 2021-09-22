@@ -121,8 +121,8 @@ class AthleteAPISerializer(serializers.ModelSerializer):
     athlete.positions.set(self.validated_data['positions'])
 
     return {
-      'message': "Contract Asset added.",
-      'id': contract.pk
+      'message': "Athlete added.",
+      'id': athlete.pk
     }
 
 class AthleteSerializer(serializers.ModelSerializer):
@@ -199,4 +199,26 @@ class AssetSerializer(serializers.ModelSerializer):
     return {
       'message': "Asset added.",
       'id': asset.pk
+    }
+
+class ContractSerializer(serializers.ModelSerializer):
+  """Serializer for contract objects"""
+  class Meta:
+    model = models.AssetContract
+    fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
+    read_only_fields = ('id',)
+
+  def save(self):
+    contract = models.AssetContract(
+      athlete_id = self.validated_data['athlete_id'],
+      name = self.validated_data['name'],
+      symbol = self.validated_data['symbol'],
+      contract_addr = self.validated_data['contract_addr'],
+    )
+
+    contract.save()
+
+    return {
+      'message': "Contract Asset added.",
+      'id': contract.pk
     }
