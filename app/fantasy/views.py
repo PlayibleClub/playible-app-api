@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
@@ -9,9 +10,12 @@ from fantasy import requests
 from fantasy import serializers
 from core import utils
 
+#TODO: Define permissions for create and update actions
+
 class PositionViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   queryset = models.Position.objects.all()
   serializer_class = serializers.PositionSerializer
+  permission_classes = [AllowAny]
   """
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -36,6 +40,7 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
   """Manage teams in the database"""
   queryset = models.Team.objects.all()
   serializer_class = serializers.TeamSerializer
+  permission_classes = [AllowAny]
 
   @swagger_auto_schema(operation_description="Retrieves all NBA team data and saves it into the database.")
   def create(self, request, *args, **kwargs):
@@ -53,6 +58,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
   """Manage athletes in the database"""
   queryset = models.Athlete.objects.all()
   serializer_class = serializers.AthleteSerializer
+  permission_classes = [AllowAny]
   
   @swagger_auto_schema(
     operation_description= "Creates an athlete instance in the database with the data from stats perform. The input could either be the name of the athlete or its corresponding id from stats perform."
@@ -89,6 +95,7 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
   """Manage athlete season data in the database"""
   queryset = models.AthleteSeason.objects.all()
   serializer_class = serializers.AthleteSeasonSerializer
+  permission_classes = [AllowAny]
 
   def create(self, request, *args, **kwargs):
     athlete = models.Athlete.objects.get(pk = request.data.get('athlete'))

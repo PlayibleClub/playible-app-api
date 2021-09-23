@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
 from core import models
 from account import serializers
 from core import utils
+
+#TODO: Define permissions for create and update actions
 
 class BaseViewSet(viewsets.GenericViewSet, 
                   mixins.ListModelMixin,
@@ -35,6 +38,7 @@ class ContractViewSet(BaseViewSet):
   """Manage contracts in the database"""
   queryset = models.AssetContract.objects.all()
   serializer_class = serializers.ContractSerializer
+  permission_classes = [AllowAny]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -55,6 +59,7 @@ class AccountViewset(BaseViewSet):
   """Manage accounts in the database"""
   queryset = models.Account.objects.all()
   serializer_class = serializers.AccountSerializer
+  permission_classes = [AllowAny]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -78,6 +83,7 @@ class AssetViewset(BaseViewSet):
   """Manage assets in the database"""
   queryset = models.Asset.objects.all()
   serializer_class = serializers.AssetSerializer
+  permission_classes = [AllowAny]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
