@@ -108,8 +108,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-AUTH_USER_MODEL = 'core.User'
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -153,3 +151,8 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'core.User'
+
+RESPONSE = {
+    'STATUS_OK': 'OK',
+    'STATUS_ERROR': 'ERROR'
+}
