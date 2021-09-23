@@ -8,7 +8,6 @@ import time
 import requests
 from requests.exceptions import HTTPError
 
-LAG = 0    # seconds ahead of stats server
 HOST = 'http://api.stats.com/v1/stats/basketball/nba/'
 PUBLIC_KEY = os.environ.get('STATSPERFORM_PUBLIC_KEY', '')
 SECRET_KEY = os.environ.get('STATSPERFORM_PRIVATE_KEY', '')
@@ -58,11 +57,9 @@ def get_sig():
   all = str.encode(PUBLIC_KEY + SECRET_KEY + timestamp)
   signature = hashlib.sha256(all).hexdigest()
   params = {
-    'accept': 'json',
+    'content-type': 'application/json',
     'api_key': PUBLIC_KEY,
     'sig': signature 
   }
-  #print league, key, secret, signature
+  
   return params
-
-  #TODO: Test requests once we get access

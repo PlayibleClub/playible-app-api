@@ -93,29 +93,34 @@ class AssetProperties(BaseInfo):
   class Meta:
     ordering = ['-created_at', '-updated_at']
 
-class Athlete(BaseInfo):
-    name = models.CharField(max_length=155)
-    terra_id = models.CharField(max_length=155)
-    api_id = models.IntegerField()
-    team = models.ForeignKey("Team", on_delete=models.CASCADE)
-    positions = models.ManyToManyField('Positions')
-    jersey = models.IntegerField()
-    is_active = models.BooleanField()
-    is_injured = models.BooleanField()
-    is_suspended = models.BooleanField()
-
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        ordering = ['-created_at', '-updated_at']
 
 class Positions(BaseInfo):
     name = models.CharField(max_length=155)
-    abbreviation = models.CharField(max_length=2, unique=True)
+    abbreviation = models.CharField(max_length=2)
     
     def __str__(self):
-        return self.name
+      return self.name
+    
+    class Meta:
+      ordering = ['-created_at', '-updated_at']
+      constraints = [
+          models.UniqueConstraint(fields=['name','abbreviation'], name='unique_position'),
+      ]
+
+class Athlete(BaseInfo):
+    first_name = models.CharField(max_length=155)
+    last_name = models.CharField(max_length=155)
+    terra_id = models.CharField(max_length=155, unique=True)
+    api_id = models.IntegerField(unique=True)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE)
+    positions = models.ManyToManyField('Positions')
+    jersey = models.IntegerField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_injured = models.BooleanField(default=False)
+    is_suspended = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
     
     class Meta:
         ordering = ['-created_at', '-updated_at']

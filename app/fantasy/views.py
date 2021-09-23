@@ -2,6 +2,8 @@ from django.shortcuts import render
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.response import Response
 
+from drf_yasg.utils import swagger_auto_schema
+
 from core import models
 from fantasy import requests
 from fantasy import serializers
@@ -87,16 +89,7 @@ class ContractViewSet(BaseViewSet):
     table_object.name = data.get("name", table_object.name)
     table_object.symbol = data.get("symbol", table_object.symbol)
     table_object.contract_addr = data.get("contract_addr", table_object.contract_addr)
-
     table_object.save()
-    serializer = serializers.ContractSerializer(table_object, data, partial=True)
-    
-    if(serializer.is_valid()):
-        return Response(serializer.data, status.HTTP_200_OK)
-    else:
-        content = serializer.errors
-        return Response(content, status=status.HTTP_400_BAD_REQUEST)
-
 
 class AccountViewset(BaseViewSet):
   """Manage accounts in the database"""
@@ -154,5 +147,48 @@ class AssetViewset(BaseViewSet):
         content = serializer.errors
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
+class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+  queryset = models.Team.objects.all()
+  serializer_class = serializers.TeamSerializer
 
+  def create(self, request, *args, **kwargs):
+    response = requests.get('teams/')
+    team_data = utils.parse_team_list_data(response['response'])
+    serializer = self.get_serializer(data=team_data, many=True)
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+      content = serializer.errors
+      return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+  queryset = models.Athlete.objects.all()
+  serializer_class = serializers.AthleteSerializer
+
+  def create(self, request, *args, **kwargs):
+    response = requests.get('participants/')
+    athlete_data = utils.filter_participant_data(response['response'], request.data)
+    serializer = serializers.AthleteAPISerializer(data=athlete_data)
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+  def partial_update(self, request, pk=None):
+    athlete = self.get_object()
+    response = requests.get('participants/')
+    athlete_data = utils.filter_participant_data(response['response'], {'api_id': athlete.api_id, 'terra_id': request.data.get('terra_id')})
+    serializer = serializers.AthleteAPISerializer(athlete, data=athlete_data, partial=True)
     
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  
+  @swagger_auto_schema(auto_schema=None)
+  def update(self, request, *args, **kwargs):
+    return Response(status=status.HTTP_403_FORBIDDEN)
+

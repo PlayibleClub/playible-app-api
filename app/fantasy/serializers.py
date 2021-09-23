@@ -3,54 +3,6 @@ from rest_framework import serializers, status, validators
 from core import models
 from core import utils
 
-
-class AthleteSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = models.Athlete
-    fields = [
-      'name',
-      'terra_id',
-      'api_id',
-    ]
-
-  def validate(self, data):
-    # request athlete data
-
-    # validate input and requested data
-
-    # match retrieved team with the saved teams in the database
-
-    # process positions data with PositionSerializer
-
-    return data
-    
-  def save(self):
-    athlete = models.Athlete(
-      name = self.validated_data['name'],
-      terra_id = self.validated_data['terra_id'],
-      api_id = self.validated_data['api_id'],
-      team = self.validated_data['team'],
-      jersey = self.validated_data['jersey'],
-      is_active = self.validated_data['is_active'],
-      is_injured = self.validated_data['is_injured'],
-      is_suspended = self.validated_data['is_suspended'],
-    )
-    athlete.save()
-    """
-    # save positions data on AthletePositions
-    for position_data in self.validated_data['positions']:
-      position = models.AthletePositions(
-        athlete = athlete
-        position = position_data
-      )
-      position.save()
-    """
-    return {
-      'message': "Athlete added.",
-      'id': athlete.pk
-    }
-
-
 class TeamListSerializer(serializers.ListSerializer):
   def save(self):
     teams_list = []
@@ -72,7 +24,7 @@ class TeamListSerializer(serializers.ListSerializer):
     }
 
 
-class TeamSerializer(serializers.Serializer):
+class TeamSerializer(serializers.ModelSerializer):
   location = serializers.CharField(required=False, allow_null=True)
   nickname = serializers.CharField(required=False, allow_null=True)
   api_id = serializers.IntegerField(
@@ -81,52 +33,130 @@ class TeamSerializer(serializers.Serializer):
   )
 
   class Meta:
+    model = models.Team
+    fields = ['id', 'location', 'nickname', 'api_id']
+    read_only_fields = ['id']
     list_serializer_class = TeamListSerializer
 
 
 class PositionSerializer(serializers.ModelSerializer):
-  """Serializer for position objects"""
+  name = serializers.CharField()
+  abbreviation = serializers.CharField()
+
   class Meta:
     model = models.Positions
     fields = ['id', 'name', 'abbreviation']
-    read_only_fields = ('id',)
+    read_only_fields = ['id']
 
   def save(self):
-    position = models.Positions(
+    position, is_created = models.Positions.objects.get_or_create(
       name = self.validated_data['name'],
       abbreviation = self.validated_data['abbreviation'],
     )
-
-    position.save()
 
     return {
       'message': "Position added.",
       'id': position.pk
     }
 
+#Serializer for Stats Perform API data
+class AthleteAPISerializer(serializers.ModelSerializer):
+  #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
+  #positions = serializers.PrimaryKeyRelatedField(queryset=models.Positions.objects.all(), many=True)
+  positions = PositionSerializer(many=True)
 
-class ContractSerializer(serializers.ModelSerializer):
-  """Serializer for contract objects"""
   class Meta:
-    model = models.AssetContract
-    fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
-    read_only_fields = ('id',)
+    model = models.Athlete
+    fields = [
+      'first_name',
+      'last_name',
+      'terra_id',
+      'api_id',
+      'team',
+      'positions',
+      'jersey',
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]
+    read_only_fields = [
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]
 
+  def validate(self, data):
+    positions_id_list = []
+
+    for position_data in data['positions']:
+      position, is_created = models.Positions.objects.get_or_create(
+        name=position_data['name'], 
+        abbreviation=position_data['abbreviation'],
+      )
+
+      positions_id_list.append(position)
+
+    data['positions'] = positions_id_list
+
+    return data
+    
   def save(self):
-    contract = models.AssetContract(
-      athlete_id = self.validated_data['athlete_id'],
-      name = self.validated_data['name'],
-      symbol = self.validated_data['symbol'],
-      contract_addr = self.validated_data['contract_addr'],
-    )
-
-    contract.save()
+    if self.instance is not None:
+      athlete = self.instance
+      team = models.Team.objects.get(api_id=self.validated_data.get('team').id)
+      athlete.first_name = self.validated_data.get('first_name')
+      athlete.last_name = self.validated_data.get('last_name')
+      athlete.terra_id = self.validated_data.get('terra_id', self.instance.terra_id)
+      athlete.api_id = self.validated_data.get('api_id')
+      athlete.team = team
+    else:
+      athlete = models.Athlete(
+        first_name = self.validated_data['first_name'],
+        last_name = self.validated_data['last_name'],
+        terra_id = self.validated_data['terra_id'],
+        api_id = self.validated_data['api_id'],
+        team = self.validated_data['team'],
+      )
+    athlete.save()
+    athlete.positions.set(self.validated_data['positions'])
 
     return {
-      'message': "Contract Asset added.",
-      'id': contract.pk
+      'message': "Athlete added.",
+      'id': athlete.pk
     }
 
+class AthleteSerializer(serializers.ModelSerializer):
+  api_id = serializers.IntegerField(
+    required=False, 
+    allow_null=True
+  )
+  #team = TeamSerializer(required=False)
+  #positions = PositionSerializer(many=True)
+
+  class Meta:
+    model = models.Athlete
+    fields = [
+      'id',
+      'first_name',
+      'last_name',
+      'terra_id',
+      'api_id',
+      'team',
+      'positions',
+      'jersey',
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]
+    read_only_fields = [
+      'id',
+      'team',
+      'positions',
+      'jersey',
+      'is_active',
+      'is_injured',
+      'is_suspended'
+    ]
 
 class AccountSerializer(serializers.ModelSerializer):
   """Serializer for account objects"""
@@ -169,4 +199,26 @@ class AssetSerializer(serializers.ModelSerializer):
     return {
       'message': "Asset added.",
       'id': asset.pk
+    }
+
+class ContractSerializer(serializers.ModelSerializer):
+  """Serializer for contract objects"""
+  class Meta:
+    model = models.AssetContract
+    fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
+    read_only_fields = ('id',)
+
+  def save(self):
+    contract = models.AssetContract(
+      athlete_id = self.validated_data['athlete_id'],
+      name = self.validated_data['name'],
+      symbol = self.validated_data['symbol'],
+      contract_addr = self.validated_data['contract_addr'],
+    )
+
+    contract.save()
+
+    return {
+      'message': "Contract Asset added.",
+      'id': contract.pk
     }
