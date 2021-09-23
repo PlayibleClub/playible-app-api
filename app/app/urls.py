@@ -42,6 +42,7 @@ urlpatterns = [
 
     url(r'^user/', include('user.urls')),
     url(r'^fantasy/', include('fantasy.urls')),
+    url(r'^account/', include('account.urls')),
 
     #admin
     path('admin/', admin.site.urls),

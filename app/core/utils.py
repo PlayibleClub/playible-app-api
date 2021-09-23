@@ -59,6 +59,26 @@ def filter_participant_data(data, participant):
       "message": "Invalid participant data"
     }
 
+def parse_athlete_season_data(data, participant):
+  try:
+    athlete_season_data = data.get('league').get('players')[0].get('seasons')[0]
+    
+    return {
+      'season': athlete_season_data.get('season'),
+      'points': athlete_season_data.get('points'),
+      'rebounds': athlete_season_data.get('rebounds'),
+      'assists': athlete_season_data.get('assists'),
+      'blocks': athlete_season_data.get('blocks'),
+      'turnovers': athlete_season_data.get('turnovers')
+    }
+      
+  except Exception:
+    print_debug("Invalid participant data")
+    return {
+      "error": Exception,
+      "message": "Invalid participant data"
+    }
+
 #Use this for printing
 def print_debug(string):
     if(settings.DEBUG):

@@ -24,7 +24,7 @@ class UserAdmin(BaseUserAdmin):
     )
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Positions)
+admin.site.register(models.Position)
 
 @admin.register(models.Athlete)
 class AthleteAdmin(admin.ModelAdmin):

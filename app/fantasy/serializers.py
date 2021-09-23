@@ -3,6 +3,7 @@ from rest_framework import serializers, status, validators
 from core import models
 from core import utils
 
+# Fantasy data serializers
 class TeamListSerializer(serializers.ListSerializer):
   def save(self):
     teams_list = []
@@ -44,12 +45,12 @@ class PositionSerializer(serializers.ModelSerializer):
   abbreviation = serializers.CharField()
 
   class Meta:
-    model = models.Positions
+    model = models.Position
     fields = ['id', 'name', 'abbreviation']
     read_only_fields = ['id']
 
   def save(self):
-    position, is_created = models.Positions.objects.get_or_create(
+    position, is_created = models.Position.objects.get_or_create(
       name = self.validated_data['name'],
       abbreviation = self.validated_data['abbreviation'],
     )
@@ -62,7 +63,7 @@ class PositionSerializer(serializers.ModelSerializer):
 #Serializer for Stats Perform API data
 class AthleteAPISerializer(serializers.ModelSerializer):
   #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
-  #positions = serializers.PrimaryKeyRelatedField(queryset=models.Positions.objects.all(), many=True)
+  #positions = serializers.PrimaryKeyRelatedField(queryset=models.Position.objects.all(), many=True)
   positions = PositionSerializer(many=True)
 
   class Meta:
@@ -89,7 +90,7 @@ class AthleteAPISerializer(serializers.ModelSerializer):
     positions_id_list = []
 
     for position_data in data['positions']:
-      position, is_created = models.Positions.objects.get_or_create(
+      position, is_created = models.Position.objects.get_or_create(
         name=position_data['name'], 
         abbreviation=position_data['abbreviation'],
       )
@@ -130,8 +131,8 @@ class AthleteSerializer(serializers.ModelSerializer):
     required=False, 
     allow_null=True
   )
-  #team = TeamSerializer(required=False)
-  #positions = PositionSerializer(many=True)
+  team = TeamSerializer(read_only=True)
+  positions = PositionSerializer(many=True, read_only=True)
 
   class Meta:
     model = models.Athlete
@@ -158,67 +159,28 @@ class AthleteSerializer(serializers.ModelSerializer):
       'is_suspended'
     ]
 
-class AccountSerializer(serializers.ModelSerializer):
-  """Serializer for account objects"""
+class AthleteSeasonSerializer(serializers.ModelSerializer):
+
   class Meta:
-    model = models.Account
-    fields = ['id', 'username', 'wallet_addr', 'image_url']
-    read_only_fields = ('id',)
-
-  def save(self):
-    account = models.Account(
-      username = self.validated_data['username'],
-      wallet_addr = self.validated_data['wallet_addr'],
-      image_url = self.validated_data['image_url'],
-    )
-
-    account.save()
-
-    return {
-      'message': "Account added.",
-      'id': account.pk
-    }
-
-class AssetSerializer(serializers.ModelSerializer):
-  """Serializer for account objects"""
-  class Meta:
-    model = models.Asset
-    fields = ['id', 'name', 'owner', 'contract', 'image_url']
-    read_only_fields = ('id',)
-
-  def save(self):
-    asset = models.Asset(
-      name = self.validated_data['name'],
-      owner = self.validated_data['owner'],
-      contract = self.validated_data['contract'],
-      image_url = self.validated_data['image_url'],
-    )
-
-    asset.save()
-
-    return {
-      'message': "Asset added.",
-      'id': asset.pk
-    }
-
-class ContractSerializer(serializers.ModelSerializer):
-  """Serializer for contract objects"""
-  class Meta:
-    model = models.AssetContract
-    fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
-    read_only_fields = ('id',)
-
-  def save(self):
-    contract = models.AssetContract(
-      athlete_id = self.validated_data['athlete_id'],
-      name = self.validated_data['name'],
-      symbol = self.validated_data['symbol'],
-      contract_addr = self.validated_data['contract_addr'],
-    )
-
-    contract.save()
-
-    return {
-      'message': "Contract Asset added.",
-      'id': contract.pk
-    }
+    model = models.AthleteSeason
+    fields = [
+      'id',
+      'athlete',
+      'season',
+      'fantasy_score',
+      'points',
+      'rebounds',
+      'assists',
+      'blocks',
+      'turnovers'
+    ]
+    read_only_fields = [
+      'id',
+      'season', #latest season by default
+      'fantasy_score',
+      'points',
+      'rebounds',
+      'assists',
+      'blocks',
+      'turnovers'
+    ]

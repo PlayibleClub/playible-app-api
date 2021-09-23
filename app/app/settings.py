@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     #apps
     'core',
     'user',
+    'account',
     'fantasy'
 ]
 
