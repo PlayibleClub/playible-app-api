@@ -73,7 +73,16 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
   def create(self, request, *args, **kwargs):
     response = requests.get('participants/')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
-      athlete_data = utils.filter_participant_data(response['response'], request.data)
+
+      try:
+        athlete_data = utils.filter_participant_data(response['response'], request.data)
+      except Exception:
+        content = {
+          "message": "An error has occured.",
+          "error": Exception
+        }
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
       serializer = serializers.AthleteAPISerializer(data=athlete_data)
       if(serializer.is_valid()):
         serializer.save()
@@ -92,7 +101,16 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
     athlete = self.get_object()
     response = requests.get('participants/')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
-      athlete_data = utils.filter_participant_data(response['response'], {'api_id': athlete.api_id, 'terra_id': request.data.get('terra_id')})
+
+      try:
+        athlete_data = utils.filter_participant_data(response['response'], {'api_id': athlete.api_id, 'terra_id': request.data.get('terra_id')})
+      except Exception:
+        content = {
+          "message": "An error has occured.",
+          "error": Exception
+        }
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+      
       serializer = serializers.AthleteAPISerializer(athlete, data=athlete_data, partial=True)
       
       if(serializer.is_valid()):
@@ -122,7 +140,16 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
     athlete = models.Athlete.objects.get(pk = request.data.get('athlete'))
     response = requests.get('stats/players/' + athlete.get('api_id'))
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
-      team_data = utils.parse_athlete_season_data(response['response'])
+
+      try:
+        team_data = utils.parse_athlete_season_data(response['response'])
+      except Exception:
+        content = {
+          "message": "An error has occured.",
+          "error": Exception
+        }
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        
       serializer = self.get_serializer(data=team_data, many=True)
       if(serializer.is_valid()):
         serializer.save()
