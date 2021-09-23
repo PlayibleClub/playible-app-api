@@ -86,7 +86,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
       serializer = serializers.AthleteAPISerializer(data=athlete_data)
       if(serializer.is_valid()):
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_200_OK)
       else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -115,7 +115,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
       
       if(serializer.is_valid()):
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_200_OK)
       else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     else:
@@ -149,11 +149,11 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
           "error": Exception
         }
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        
+
       serializer = self.get_serializer(data=team_data, many=True)
       if(serializer.is_valid()):
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_200_OK)
       else:
         content = serializer.errors
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
