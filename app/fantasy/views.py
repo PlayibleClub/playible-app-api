@@ -88,10 +88,23 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
 class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """Manage athlete season data in the database"""
   queryset = models.AthleteSeason.objects.all()
-  serializer_class = serializers.AthleteSeasonSerializer
+  serializer_class = serializers.AthleteSeasonAPISerializer
+  permission_classes = [AllowAny]
 
   def create(self, request, *args, **kwargs):
-    athlete = models.Athlete.objects.get(pk = request.data.get('athlete'))
+    try:
+      athlete = models.AthleteSeason.objects.get(athlete__pk = request.data.get('athlete'))
+      serializer = self.get_serializer(athlete, data=request.data)
+    except models.AthleteSeason.DoesNotExist:
+      serializer = self.get_serializer(data=request.data)
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+      content = serializer.errors
+      return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+    """
     response = requests.get('stats/players/' + athlete.get('api_id'))
     team_data = utils.parse_athlete_season_data(response['response'])
     serializer = self.get_serializer(data=team_data, many=True)
@@ -99,5 +112,9 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
       serializer.save()
       return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
-      content = serializer.errors
+      content = {
+        "message": "Failed to fetch data from Stats Perform API",
+        "response": response['response']
+      }
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    """
