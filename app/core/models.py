@@ -94,7 +94,7 @@ class AssetProperties(BaseInfo):
     ordering = ['-created_at', '-updated_at']
 
 
-class Positions(BaseInfo):
+class Position(BaseInfo):
     name = models.CharField(max_length=155)
     abbreviation = models.CharField(max_length=2)
     
@@ -113,7 +113,7 @@ class Athlete(BaseInfo):
     terra_id = models.CharField(max_length=155, unique=True)
     api_id = models.IntegerField(unique=True)
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
-    positions = models.ManyToManyField('Positions')
+    positions = models.ManyToManyField('Position')
     jersey = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_injured = models.BooleanField(default=False)
