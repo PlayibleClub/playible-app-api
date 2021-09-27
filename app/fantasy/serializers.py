@@ -159,7 +159,40 @@ class AthleteSerializer(serializers.ModelSerializer):
       'is_suspended'
     ]
 
+#Used for API data retrieval
+class AthleteSeasonAPISerializer(serializers.ModelSerializer):
+  fantasy_score = serializers.SerializerMethodField()
+  class Meta:
+    model = models.AthleteSeason
+    fields = [
+      'id',
+      'athlete',
+      'season',
+      'fantasy_score',
+      'points',
+      'rebounds',
+      'assists',
+      'blocks',
+      'turnovers'
+    ]
+    read_only_fields = [
+      'id',
+      'fantasy_score',
+    ]
+
+  def get_fantasy_score(self, obj):
+    stats_info_list = models.StatsInfo.objects.filter(is_active=True)
+    fantasy_score = 0
+    for stats_info in stats_info_list:
+      try:
+        fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
+      except AttributeError:
+        pass
+    return fantasy_score
+
+
 class AthleteSeasonSerializer(serializers.ModelSerializer):
+  fantasy_score = serializers.SerializerMethodField()
 
   class Meta:
     model = models.AthleteSeason
@@ -184,3 +217,13 @@ class AthleteSeasonSerializer(serializers.ModelSerializer):
       'blocks',
       'turnovers'
     ]
+
+  def get_fantasy_score(self, obj):
+    stats_info_list = models.StatsInfo.objects.filter(is_active=True)
+    fantasy_score = 0
+    for stats_info in stats_info_list:
+      try:
+        fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
+      except AttributeError:
+        pass
+    return fantasy_score
