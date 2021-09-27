@@ -1,0 +1,50 @@
+[
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Points",
+      "key": "points",
+      "multiplier": "1"
+    }
+  },
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Rebounds",
+      "key": "rebounds",
+      "multiplier": "1.2"
+    }
+  },
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Assists",
+      "key": "assists",
+      "multiplier": "1.5"
+    }
+  },
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Blocks",
+      "key": "blocks",
+      "multiplier": "2"
+    }
+  },
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Steals",
+      "key": "steals",
+      "multiplier": "2"
+    }
+  },
+  {
+    "model": "core.StatsInfo",
+    "fields": {
+      "name": "Turnover",
+      "key": "turnover",
+      "multiplier": "-1"
+    }
+  }
+]
