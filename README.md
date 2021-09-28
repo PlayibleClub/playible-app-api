@@ -19,6 +19,9 @@ docker compose build
 ## run docker compose
 docker compose up
 
+## run docker-compose with local settings
+docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
+
 ## Run commands on docker
 docker compose run app sh -c "insert command here"
 
