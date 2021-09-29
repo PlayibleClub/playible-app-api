@@ -43,6 +43,14 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
   serializer_class = serializers.TeamSerializer
   permission_classes = [AllowAny]
 
+  def create(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+  """
   @swagger_auto_schema(operation_description="Retrieves all NBA team data and saves it into the database.")
   def create(self, request, *args, **kwargs):
     response = requests.get('teams/')
@@ -60,17 +68,25 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         "response": response['response']
       }
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    """
 
 class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """Manage athletes in the database"""
   queryset = models.Athlete.objects.all()
-  serializer_class = serializers.AthleteSerializer
+  serializer_class = serializers.AthleteAPISerializer
   permission_classes = [AllowAny]
   
   @swagger_auto_schema(
     operation_description= "Creates an athlete instance in the database with the data from stats perform. The input could either be the name of the athlete or its corresponding id from stats perform."
   )
   def create(self, request, *args, **kwargs):
+    serializer = serializers.AthleteAPISerializer(data=request.data)
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    """
     response = requests.get('participants/')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
 
@@ -95,10 +111,18 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
         "response": response['response']
       }
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    """
 
   @swagger_auto_schema(operation_description="Updates an athlete instance to reflect stats perform data.")
   def partial_update(self, request, pk=None):
     athlete = self.get_object()
+    serializer = serializers.AthleteAPISerializer(athlete, data=athlete_data, partial=True)
+    
+    if(serializer.is_valid()):
+      serializer.save()
+      return Response(serializer.data, status=status.HTTP_200_OK)
+    else:
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     response = requests.get('participants/')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
 
