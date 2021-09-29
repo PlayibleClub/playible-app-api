@@ -74,6 +74,7 @@ class AthleteAPISerializer(serializers.ModelSerializer):
       'terra_id',
       'api_id',
       'team',
+      'contract',
       'positions',
       'jersey',
       'is_active',

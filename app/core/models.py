@@ -45,7 +45,7 @@ class BaseInfo(models.Model):
       abstract = True
 
 class Account(BaseInfo):
-  username = models.CharField(max_length=155)
+  username = models.CharField(max_length=155, unique=True)
   wallet_addr = models.CharField(max_length=155, unique=True)
   image_url = models.CharField(max_length=155, null=True, blank=True)
 
@@ -56,7 +56,6 @@ class Account(BaseInfo):
     ordering = ['-created_at', '-updated_at']
 
 class AssetContract(BaseInfo):
-  athlete_id = models.ForeignKey("Athlete", on_delete=models.CASCADE)
   symbol = models.CharField(max_length=155, unique=True)
   name = models.CharField(max_length=155)
   contract_addr = models.CharField(max_length=155)
@@ -112,6 +111,7 @@ class Athlete(BaseInfo):
     last_name = models.CharField(max_length=155)
     terra_id = models.CharField(max_length=155, unique=True)
     api_id = models.IntegerField(unique=True)
+    contract = models.ForeignKey("AssetContract", on_delete=models.SET_NULL, blank=True, null=True)
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
     positions = models.ManyToManyField('Position')
     jersey = models.IntegerField(null=True, blank=True)
