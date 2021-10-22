@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register(r'contracts', views.ContractViewSet)
 router.register(r'accounts', views.AccountViewset)
 router.register(r'assets', views.AssetViewset)
+router.register(r'emails', views.EmailViewset)
 
 urlpatterns = [
   url(r'', include(router.urls)),

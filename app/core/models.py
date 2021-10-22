@@ -8,4 +8,3 @@ class BaseInfo(models.Model):
   class Meta:
       ordering = ['-updated_at', '-created_at']
       abstract = True
-

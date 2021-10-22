@@ -112,3 +112,20 @@ class AssetViewset(BaseViewSet):
     else:
         content = serializer.errors
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+class EmailViewset(viewsets.GenericViewSet, 
+                  mixins.ListModelMixin,
+                  mixins.CreateModelMixin,):
+  """Manage prelaunch emails in the database"""
+  queryset = models.PrelaunchEmail.objects.all()
+  serializer_class = serializers.EmailSerializer
+  permission_classes = [AllowAny]
+
+  def perform_create(self, serializer): 
+    """Create a new prelaunch email"""
+    if(serializer.is_valid()):
+        content = serializer.save()
+        return Response(content, status=status.HTTP_201_CREATED)
+    else:
+        content = serializer.errors
+        return Response(content, status=status.HTTP_400_BAD_REQUEST)
