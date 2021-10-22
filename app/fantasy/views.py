@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
-from core import models
+from fantasy import models
 from fantasy import requests
 from fantasy import serializers
 from core import utils

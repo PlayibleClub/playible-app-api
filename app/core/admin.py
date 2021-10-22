@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin 
 from django.utils.translation import gettext as _
 
-from core import models
+from user import models as user
+from fantasy import models as fantasy
 
 class UserAdmin(BaseUserAdmin): 
     ordering = ['id']
@@ -23,15 +24,15 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Position)
-admin.site.register(models.AthleteSeason)
-admin.site.register(models.StatsInfo)
+admin.site.register(user.User, UserAdmin)
+admin.site.register(fantasy.Position)
+admin.site.register(fantasy.AthleteSeason)
+admin.site.register(fantasy.StatsInfo)
 
-@admin.register(models.Athlete)
+@admin.register(fantasy.Athlete)
 class AthleteAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'terra_id', 'api_id')
 
-@admin.register(models.Team)
+@admin.register(fantasy.Team)
 class AthleteAdmin(admin.ModelAdmin):
     list_display = ('id', 'location', 'nickname')

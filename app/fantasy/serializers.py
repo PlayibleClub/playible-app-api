@@ -1,6 +1,6 @@
 from rest_framework import serializers, status, validators
 
-from core import models
+from fantasy import models
 from core import utils
 
 # Fantasy data serializers
