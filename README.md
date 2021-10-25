@@ -23,7 +23,7 @@ docker compose up
 docker-compose -f docker-compose.yml -f docker-compose.local.yml up -d
 
 ## Run commands on docker
-docker compose run app sh -c "insert command here"
+docker-compose exec app sh -c "insert command here"
 
 ## Load initial data
 python manage.py loaddata initial_data.json
