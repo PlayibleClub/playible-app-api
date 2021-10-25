@@ -1,6 +1,6 @@
 from rest_framework import serializers, status, validators
 
-from core import models
+from account import models
 from core import utils
 
 # Account and asset data serializers
@@ -48,7 +48,7 @@ class AssetSerializer(serializers.ModelSerializer):
     }
 
 class ContractSerializer(serializers.ModelSerializer):
-  """Serializer for contract objects"""
+  """Serializer for prelaumch email objects"""
   class Meta:
     model = models.AssetContract
     fields = ['id', 'name', 'symbol','contract_addr']
@@ -66,4 +66,23 @@ class ContractSerializer(serializers.ModelSerializer):
     return {
       'message': "Contract Asset added.",
       'id': contract.pk
+    }
+
+class EmailSerializer(serializers.ModelSerializer):
+  """Serializer for contract objects"""
+  class Meta:
+    model = models.PrelaunchEmail
+    fields = ['id', 'email']
+    read_only_fields = ('id',)
+
+  def save(self):
+    prelaunchEmail = models.PrelaunchEmail(
+      email = self.validated_data['email'],
+    )
+
+    prelaunchEmail.save()
+
+    return {
+      'message': "Prelaunch Email added.",
+      'id': prelaunchEmail.pk
     }

@@ -1,6 +1,6 @@
 [
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Points",
       "key": "points",
@@ -8,7 +8,7 @@
     }
   },
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Rebounds",
       "key": "rebounds",
@@ -16,7 +16,7 @@
     }
   },
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Assists",
       "key": "assists",
@@ -24,7 +24,7 @@
     }
   },
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Blocks",
       "key": "blocks",
@@ -32,7 +32,7 @@
     }
   },
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Steals",
       "key": "steals",
@@ -40,7 +40,7 @@
     }
   },
   {
-    "model": "core.StatsInfo",
+    "model": "fantasy.StatsInfo",
     "fields": {
       "name": "Turnover",
       "key": "turnover",
