@@ -12,7 +12,7 @@ class Position(BaseInfo):
   class Meta:
     ordering = ['-created_at', '-updated_at']
     constraints = [
-        models.UniqueConstraint(fields=['name','abbreviation'], name='unique_position'),
+        models.UniqueConstraint(fields=['name','abbreviation'], name='unique_abbreviation'),
     ]
 
 

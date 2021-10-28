@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from user import models as user
 from fantasy import models as fantasy
+from account import models as account
 
 class UserAdmin(BaseUserAdmin): 
     ordering = ['id']
@@ -24,6 +25,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
+admin.site.register(account.Account)
+admin.site.register(account.PrelaunchEmail)
 admin.site.register(user.User, UserAdmin)
 admin.site.register(fantasy.Position)
 admin.site.register(fantasy.AthleteSeason)

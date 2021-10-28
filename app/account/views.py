@@ -38,7 +38,7 @@ class ContractViewSet(BaseViewSet):
   """Manage contracts in the database"""
   queryset = models.AssetContract.objects.all()
   serializer_class = serializers.ContractSerializer
-  permission_classes = [AllowAny]
+  permission_classes = [IsAuthenticated]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -59,7 +59,7 @@ class AccountViewset(BaseViewSet):
   """Manage accounts in the database"""
   queryset = models.Account.objects.all()
   serializer_class = serializers.AccountSerializer
-  permission_classes = [AllowAny]
+  permission_classes = [IsAuthenticated]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -83,7 +83,7 @@ class AssetViewset(BaseViewSet):
   """Manage assets in the database"""
   queryset = models.Asset.objects.all()
   serializer_class = serializers.AssetSerializer
-  permission_classes = [AllowAny]
+  permission_classes = [IsAuthenticated]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -119,7 +119,7 @@ class EmailViewset(viewsets.GenericViewSet,
   """Manage prelaunch emails in the database"""
   queryset = models.PrelaunchEmail.objects.all()
   serializer_class = serializers.EmailSerializer
-  permission_classes = [AllowAny]
+  permission_classes = [IsAuthenticated]
 
   def perform_create(self, serializer): 
     """Create a new prelaunch email"""
