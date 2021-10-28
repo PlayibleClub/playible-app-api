@@ -59,20 +59,20 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
         read_only_fields = ('id',)
 
-  def save(self):
-    contract = models.AssetContract(
-        athlete_id = self.validated_data['athlete_id'],
-        name = self.validated_data['name'],
-        symbol = self.validated_data['symbol'],
-        contract_addr = self.validated_data['contract_addr'],
-    )
+    def save(self):
+        contract = models.AssetContract(
+            athlete_id = self.validated_data['athlete_id'],
+            name = self.validated_data['name'],
+            symbol = self.validated_data['symbol'],
+            contract_addr = self.validated_data['contract_addr'],
+        )
 
-    contract.save()
+        contract.save()
 
-    return {
-        'message': "Contract Asset added.",
-        'id': contract.pk
-    }
+        return {
+            'message': "Contract Asset added.",
+            'id': contract.pk
+        }
 
 class EmailSerializer(serializers.ModelSerializer):
     """Serializer for contract objects"""
@@ -81,14 +81,14 @@ class EmailSerializer(serializers.ModelSerializer):
         fields = ['id', 'email']
         read_only_fields = ('id',)
 
-  def save(self):
-    prelaunchEmail = models.PrelaunchEmail(
-        email = self.validated_data['email'],
-    )
+    def save(self):
+        prelaunchEmail = models.PrelaunchEmail(
+            email = self.validated_data['email'],
+        )
 
-    prelaunchEmail.save()
+        prelaunchEmail.save()
 
-    return {
-        'message': "Prelaunch Email added.",
-        'id': prelaunchEmail.pk
-    }
+        return {
+            'message': "Prelaunch Email added.",
+            'id': prelaunchEmail.pk
+        }
