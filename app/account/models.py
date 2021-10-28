@@ -39,7 +39,7 @@ class Asset(BaseInfo):
     class Meta:
         ordering = ['-created_at', '-updated_at']
         constraints = [
-            models.UniqueConstraint(fields=['name','contract'], name='unique_position'),
+            models.UniqueConstraint(fields=['name','contract'], name='unique_contract'),
         ]
 
 

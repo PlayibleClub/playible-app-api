@@ -113,13 +113,20 @@ class AssetViewset(BaseViewSet):
         content = serializer.errors
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-class EmailViewset(viewsets.GenericViewSet, 
+class EmailViewset(viewsets.GenericViewSet,
                   mixins.ListModelMixin,
                   mixins.CreateModelMixin,):
   """Manage prelaunch emails in the database"""
   queryset = models.PrelaunchEmail.objects.all()
   serializer_class = serializers.EmailSerializer
-  permission_classes = [IsAuthenticated]
+
+  def get_permissions(self):
+    """Set custom permissions for each action."""
+    if self.action in ['list']:
+        self.permission_classes = [IsAuthenticated]
+    elif self.action in ['create']:
+        self.permission_classes = [AllowAny]
+    return super().get_permissions()
 
   def perform_create(self, serializer): 
     """Create a new prelaunch email"""
