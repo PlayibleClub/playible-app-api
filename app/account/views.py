@@ -34,10 +34,10 @@ class BaseViewSet(viewsets.GenericViewSet,
   def update(self, request, *args, **kwargs):
     return Response(status=status.HTTP_403_FORBIDDEN)
 
-class ContractViewSet(BaseViewSet):
-  """Manage contracts in the database"""
-  queryset = models.AssetContract.objects.all()
-  serializer_class = serializers.ContractSerializer
+class CollectionViewSet(BaseViewSet):
+  """Manage collections in the database"""
+  queryset = models.Collection.objects.all()
+  serializer_class = serializers.CollectionSerializer
   permission_classes = [IsAuthenticated]
 
   def partial_update(self, request, *args, **kwargs):
@@ -59,7 +59,7 @@ class AccountViewset(BaseViewSet):
   """Manage accounts in the database"""
   queryset = models.Account.objects.all()
   serializer_class = serializers.AccountSerializer
-  permission_classes = [IsAuthenticated]
+  permission_classes = [AllowAny]
 
   def partial_update(self, request, *args, **kwargs):
     table_object = self.get_object()
@@ -96,7 +96,7 @@ class AssetViewset(BaseViewSet):
       pass
 
     try:
-      contract = models.AssetContract.objects.get(id=data["id"])
+      contract = models.Collection.objects.get(id=data["id"])
       table_object.contract = contract
     except KeyError:
       pass

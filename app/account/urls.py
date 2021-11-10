@@ -5,7 +5,7 @@ from django.conf.urls import url
 from . import views
 
 router = DefaultRouter()
-router.register(r'contracts', views.ContractViewSet)
+router.register(r'collections', views.CollectionViewSet)
 router.register(r'accounts', views.AccountViewset)
 router.register(r'assets', views.AssetViewset)
 router.register(r'emails', views.EmailViewset)
