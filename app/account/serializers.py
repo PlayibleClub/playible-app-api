@@ -14,7 +14,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         data['username'] = data.get('username', data.get('wallet_addr'))
-        utils.getTxInfo("421D2EB3DB407AF523F228C2EE0877E5FE66976EDD54EA06CB16A5852A8DE447")
         return data
 
     def save(self):
