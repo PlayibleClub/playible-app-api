@@ -34,14 +34,14 @@ class AssetSerializer(serializers.ModelSerializer):
     """Serializer for account objects"""
     class Meta:
         model = models.Asset
-        fields = ['id', 'name', 'owner', 'contract', 'image_url']
+        fields = ['id', 'name', 'owner', 'collection', 'image_url']
         read_only_fields = ('id',)
 
     def save(self):
         asset = models.Asset(
             name = self.validated_data['name'],
             owner = self.validated_data['owner'],
-            contract = self.validated_data['contract'],
+            collection = self.validated_data['collection'],
             image_url = self.validated_data['image_url'],
         )
 
@@ -56,14 +56,14 @@ class CollectionSerializer(serializers.ModelSerializer):
     """Serializer for prelaumch email objects"""
     class Meta:
         model = models.Collection
-        fields = ['id', 'athlete_id', 'name', 'symbol','contract_addr']
+        fields = ['id', 'name', 'description', 'admin_addr','contract_addr']
         read_only_fields = ('id',)
 
     def save(self):
         collection = models.Collection(
-            athlete_id = self.validated_data['athlete_id'],
             name = self.validated_data['name'],
-            symbol = self.validated_data['symbol'],
+            description = self.validated_data['description'],
+            admin_addr = self.validated_data['admin_addr'],
             contract_addr = self.validated_data['contract_addr'],
         )
 
@@ -71,7 +71,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
         return {
             'message': "Collection added.",
-            'id': contract.pk
+            'id': collection.pk
         }
 
 class EmailSerializer(serializers.ModelSerializer):
@@ -91,4 +91,26 @@ class EmailSerializer(serializers.ModelSerializer):
         return {
             'message': "Prelaunch Email added.",
             'id': prelaunchEmail.pk
+        }
+
+class SalesOrderSerializer(serializers.ModelSerializer):
+    """Serializer for Sales Order objects"""
+    class Meta:
+        model = models.SalesOrder
+        fields = ['id', 'asset_id', 'price', 'signed_message', 'message']
+        read_only_fields = ('id',)
+
+    def save(self):
+        salesOrder = models.SalesOrder(
+            asset_id = self.validated_data['asset_id'],
+            price = self.validated_data['price'],
+            signed_message = self.validated_data['signed_message'],
+            message = self.validated_data['message'],
+        )
+
+        salesOrder.save()
+
+        return {
+            'message': "Sales Order added.",
+            'id': salesOrder.pk
         }
