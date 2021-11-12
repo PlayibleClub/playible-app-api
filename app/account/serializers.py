@@ -97,12 +97,12 @@ class SalesOrderSerializer(serializers.ModelSerializer):
     """Serializer for Sales Order objects"""
     class Meta:
         model = models.SalesOrder
-        fields = ['id', 'asset_id', 'price', 'signed_message', 'message']
+        fields = ['id', 'asset', 'price', 'signed_message', 'message']
         read_only_fields = ('id',)
 
     def save(self):
         salesOrder = models.SalesOrder(
-            asset_id = self.validated_data['asset_id'],
+            asset = self.validated_data['asset'],
             price = self.validated_data['price'],
             signed_message = self.validated_data['signed_message'],
             message = self.validated_data['message'],

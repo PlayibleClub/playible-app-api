@@ -66,13 +66,13 @@ class PrelaunchEmail(BaseInfo):
 
 
 class SalesOrder(BaseInfo):
-    asset_id = models.OneToOneField("Asset", on_delete=models.CASCADE)
+    asset = models.OneToOneField("Asset", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=19, decimal_places=10)
     signed_message = models.CharField(max_length=155)
     message = models.CharField(max_length=155)
     
     def __str__(self):
-        return self.asset_id + '-' + self.price
+        return self.asset + '-' + self.price
       
     class Meta:
         ordering = ['-created_at', '-updated_at']
