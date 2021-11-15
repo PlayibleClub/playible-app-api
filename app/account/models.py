@@ -14,11 +14,11 @@ class Account(BaseInfo):
         ordering = ['-created_at', '-updated_at']
 
 
-class AssetContract(BaseInfo):
-    athlete_id = models.ForeignKey("fantasy.Athlete", on_delete=models.CASCADE)
-    symbol = models.CharField(max_length=155, unique=True)
+class Collection(BaseInfo):
     name = models.CharField(max_length=155)
-    contract_addr = models.CharField(max_length=155)
+    description = models.TextField()
+    contract_addr = models.CharField(max_length=155, unique=True)
+    admin_addr = models.CharField(max_length=155)
     
     def __str__(self):
         return self.name
@@ -30,7 +30,7 @@ class AssetContract(BaseInfo):
 class Asset(BaseInfo):
     name = models.CharField(max_length=155) #Token ID
     owner = models.ForeignKey("Account", on_delete=models.CASCADE)
-    contract = models.ForeignKey("AssetContract", on_delete=models.CASCADE)
+    collection = models.ForeignKey("Collection", on_delete=models.CASCADE)
     image_url = models.CharField(max_length=155, null=True, blank=True)
     
     def __str__(self):
@@ -38,9 +38,6 @@ class Asset(BaseInfo):
       
     class Meta:
         ordering = ['-created_at', '-updated_at']
-        constraints = [
-            models.UniqueConstraint(fields=['name','contract'], name='unique_contract'),
-        ]
 
 
 class AssetProperties(BaseInfo):
@@ -64,5 +61,18 @@ class PrelaunchEmail(BaseInfo):
     def __str__(self):
         return self.email
     
+    class Meta:
+        ordering = ['-created_at', '-updated_at']
+
+
+class SalesOrder(BaseInfo):
+    asset = models.OneToOneField("Asset", on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=19, decimal_places=10)
+    signed_message = models.CharField(max_length=155)
+    message = models.CharField(max_length=155)
+    
+    def __str__(self):
+        return self.asset + '-' + self.price
+      
     class Meta:
         ordering = ['-created_at', '-updated_at']
