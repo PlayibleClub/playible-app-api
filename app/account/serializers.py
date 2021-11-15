@@ -2,6 +2,7 @@ from rest_framework import serializers, status, validators
 
 from account import models
 from core import utils
+from core import terra
 
 # Account and asset data serializers
 class AccountSerializer(serializers.ModelSerializer):
@@ -22,7 +23,6 @@ class AccountSerializer(serializers.ModelSerializer):
             wallet_addr = self.validated_data['wallet_addr'],
             image_url = self.validated_data.get('image_url', ''),
         )
-
         account.save()
 
         return {
