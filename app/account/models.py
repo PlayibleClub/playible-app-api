@@ -16,7 +16,6 @@ class Account(BaseInfo):
 
 class Collection(BaseInfo):
     contract_addr = models.CharField(max_length=155, unique=True)
-    admin_addr = models.CharField(max_length=155)
     
     def __str__(self):
         return self.contract_addr

@@ -84,7 +84,7 @@ class AssetViewset(BaseViewSet):
     """Manage assets in the database"""
     queryset = models.Asset.objects.all()
     serializer_class = serializers.AssetSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def partial_update(self, request, *args, **kwargs):
         table_object = self.get_object()
@@ -143,4 +143,4 @@ class SalesOrderViewset(BaseViewSet):
     """Manage sales order in the database"""
     queryset = models.SalesOrder.objects.all()
     serializer_class = serializers.SalesOrderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]

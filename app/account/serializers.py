@@ -33,15 +33,28 @@ class AccountSerializer(serializers.ModelSerializer):
 class AssetSerializer(serializers.ModelSerializer):
     """Serializer for account objects"""
     token_info = serializers.SerializerMethodField()
+    collection = serializers.CharField(write_only=True)
+    owner = serializers.CharField(write_only=True)
 
     class Meta:
         model = models.Asset
         fields = ['id', 'token_id', 'owner', 'collection', 'token_info']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'token_info']
 
     def get_token_info(self, obj):
         #token_info = terra.query_contract(getattr(obj, 'collection'), { "contract_info":{}})
-        return getattr(obj, 'collection').contract_addr
+        return 1
+
+    def validate(self, data):
+        owner, is_created = models.Account.objects.get_or_create(
+            wallet_addr=data['owner']
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=data['collection']
+        )
+        data['owner'] = owner
+        data['collection'] = collection
+        return data
 
     def save(self):
         asset = models.Asset(
@@ -63,11 +76,12 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Collection
-        fields = ['id', 'admin_addr','contract_addr', 'contract_info']
+        fields = ['id', 'contract_addr', 'contract_info']
         read_only_fields = ['id', 'contract_info']
 
     def get_contract_info(self, obj):
-        contract_info = terra.query_contract(getattr(obj, 'contract_addr'), { "contract_info":{}})
+        contract_info = {}
+        #contract_info = terra.query_contract(getattr(obj, 'contract_addr'), { "contract_info":{}})
         return contract_info
 
     def validate(self, data):
@@ -75,7 +89,6 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def save(self):
         collection = models.Collection(
-            admin_addr = self.validated_data['admin_addr'],
             contract_addr = self.validated_data['contract_addr'],
         )
 
@@ -107,10 +120,30 @@ class EmailSerializer(serializers.ModelSerializer):
 
 class SalesOrderSerializer(serializers.ModelSerializer):
     """Serializer for Sales Order objects"""
+    collection = serializers.CharField(write_only=True)
+    token_id = serializers.CharField(write_only=True)
+    asset = AssetSerializer(read_only=True)
+
     class Meta:
         model = models.SalesOrder
-        fields = ['id', 'asset', 'price', 'signed_message', 'message']
-        read_only_fields = ('id',)
+        fields = ['id', 'asset', 'collection', 'token_id', 'price', 'signed_message', 'message']
+        read_only_fields = ('id', 'asset')
+
+    def validate(self, data):
+        owner, is_created = models.Account.objects.get_or_create(
+            #temp data
+            wallet_addr="0xAntman"
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=data['collection']
+        )
+        asset, is_created = models.Asset.objects.get_or_create(
+            token_id=data['token_id'],
+            collection=collection,
+            owner=owner
+        )
+        data['asset'] = asset
+        return data
 
     def save(self):
         salesOrder = models.SalesOrder(
@@ -119,7 +152,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
             signed_message = self.validated_data['signed_message'],
             message = self.validated_data['message'],
         )
-
         salesOrder.save()
 
         return {
