@@ -27,6 +27,8 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.register(account.Account)
 admin.site.register(account.PrelaunchEmail)
+admin.site.register(account.Asset)
+admin.site.register(account.Collection)
 admin.site.register(user.User, UserAdmin)
 admin.site.register(fantasy.Position)
 admin.site.register(fantasy.AthleteSeason)

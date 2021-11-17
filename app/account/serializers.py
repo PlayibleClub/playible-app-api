@@ -32,17 +32,22 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class AssetSerializer(serializers.ModelSerializer):
     """Serializer for account objects"""
+    token_info = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Asset
-        fields = ['id', 'name', 'owner', 'collection', 'image_url']
-        read_only_fields = ('id',)
+        fields = ['id', 'token_id', 'owner', 'collection', 'token_info']
+        read_only_fields = ['id']
+
+    def get_token_info(self, obj):
+        #token_info = terra.query_contract(getattr(obj, 'collection'), { "contract_info":{}})
+        return getattr(obj, 'collection').contract_addr
 
     def save(self):
         asset = models.Asset(
-            name = self.validated_data['name'],
+            token_id = self.validated_data['token_id'],
             owner = self.validated_data['owner'],
             collection = self.validated_data['collection'],
-            image_url = self.validated_data['image_url'],
         )
 
         asset.save()
@@ -53,16 +58,23 @@ class AssetSerializer(serializers.ModelSerializer):
         }
 
 class CollectionSerializer(serializers.ModelSerializer):
-    """Serializer for prelaumch email objects"""
+    """Serializer for collection objects"""
+    contract_info = serializers.SerializerMethodField()
+
     class Meta:
         model = models.Collection
-        fields = ['id', 'name', 'description', 'admin_addr','contract_addr']
-        read_only_fields = ('id',)
+        fields = ['id', 'admin_addr','contract_addr', 'contract_info']
+        read_only_fields = ['id', 'contract_info']
+
+    def get_contract_info(self, obj):
+        contract_info = terra.query_contract(getattr(obj, 'contract_addr'), { "contract_info":{}})
+        return contract_info
+
+    def validate(self, data):
+        return data
 
     def save(self):
         collection = models.Collection(
-            name = self.validated_data['name'],
-            description = self.validated_data['description'],
             admin_addr = self.validated_data['admin_addr'],
             contract_addr = self.validated_data['contract_addr'],
         )

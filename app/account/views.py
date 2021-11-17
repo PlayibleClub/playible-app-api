@@ -51,7 +51,7 @@ class CollectionViewSet(BaseViewSet):
         except KeyError:
             pass
     
-        table_object.name = data.get("name", table_object.name)
+        #table_object.name = data.get("name", table_object.name)
         #table_object.symbol = data.get("symbol", table_object.symbol)
         #table_object.contract_addr = data.get("contract_addr", table_object.contract_addr)
         table_object.save()

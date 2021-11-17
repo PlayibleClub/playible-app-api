@@ -15,23 +15,20 @@ class Account(BaseInfo):
 
 
 class Collection(BaseInfo):
-    name = models.CharField(max_length=155)
-    description = models.TextField()
     contract_addr = models.CharField(max_length=155, unique=True)
     admin_addr = models.CharField(max_length=155)
     
     def __str__(self):
-        return self.name
+        return self.contract_addr
         
     class Meta:
         ordering = ['-created_at', '-updated_at']
 
 
 class Asset(BaseInfo):
-    name = models.CharField(max_length=155) #Token ID
+    token_id = models.CharField(max_length=155) #Token ID
     owner = models.ForeignKey("Account", on_delete=models.CASCADE)
     collection = models.ForeignKey("Collection", on_delete=models.CASCADE)
-    image_url = models.CharField(max_length=155, null=True, blank=True)
     
     def __str__(self):
         return self.name
