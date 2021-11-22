@@ -40,21 +40,20 @@ class CollectionViewSet(BaseViewSet):
     queryset = models.Collection.objects.all()
     serializer_class = serializers.CollectionSerializer
     permission_classes = [AllowAny]
-
-    def partial_update(self, request, *args, **kwargs):
-        table_object = self.get_object()
-        data = request.data
-
+    '''
+    def create(self, request, *args, **kwargs):
         try:
-            athlete_id = models.Athlete.objects.get(id=data["id"])
-            table_object.athlete_id = athlete_id
-        except KeyError:
-            pass
-    
-        #table_object.name = data.get("name", table_object.name)
-        #table_object.symbol = data.get("symbol", table_object.symbol)
-        #table_object.contract_addr = data.get("contract_addr", table_object.contract_addr)
-        table_object.save()
+            collection = models.Collection.objects.get(collection__pk = request.data.get('collection'))
+            serializer = self.get_serializer(collection, data=request.data)
+        except models.Collection.DoesNotExist:
+            serializer = self.get_serializer(data=request.data)
+        if(serializer.is_valid()):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            content = serializer.errors
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    '''
 
 class AccountViewset(BaseViewSet):
     """Manage accounts in the database"""
@@ -80,12 +79,18 @@ class AccountViewset(BaseViewSet):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AssetViewset(BaseViewSet):
+class AssetViewset(viewsets.GenericViewSet, 
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin):
     """Manage assets in the database"""
     queryset = models.Asset.objects.all()
     serializer_class = serializers.AssetSerializer
     permission_classes = [AllowAny]
 
+
+
+    '''
     def partial_update(self, request, *args, **kwargs):
         table_object = self.get_object()
         data = request.data
@@ -113,6 +118,7 @@ class AssetViewset(BaseViewSet):
         else:
             content = serializer.errors
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    '''
 
 class EmailViewset(viewsets.GenericViewSet,
     mixins.ListModelMixin,
