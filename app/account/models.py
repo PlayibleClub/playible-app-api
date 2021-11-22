@@ -8,7 +8,7 @@ class Account(BaseInfo):
     image_url = models.CharField(max_length=155, null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return self.wallet_addr
         
     class Meta:
         ordering = ['-created_at', '-updated_at']
@@ -30,10 +30,13 @@ class Asset(BaseInfo):
     collection = models.ForeignKey("Collection", on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.name
+        return self.token_id + ' ' + self.collection.contract_addr
       
     class Meta:
         ordering = ['-created_at', '-updated_at']
+        constraints = [
+            models.UniqueConstraint(fields=['token_id','collection'], name='unique_asset'),
+        ]
 
 
 class AssetProperties(BaseInfo):
@@ -68,7 +71,7 @@ class SalesOrder(BaseInfo):
     message = models.CharField(max_length=155)
     
     def __str__(self):
-        return self.asset + '-' + self.price
+        return self.asset.token_id + ' ' + self.asset.collection.contract_addr + '-' + str(self.price)
       
     class Meta:
         ordering = ['-created_at', '-updated_at']
