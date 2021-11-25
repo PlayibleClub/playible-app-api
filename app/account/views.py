@@ -8,6 +8,7 @@ from drf_yasg.utils import swagger_auto_schema
 from account import models
 from account import serializers
 from core import utils
+from core import terra
 
 #TODO: Define permissions for create and update actions
 
@@ -119,6 +120,34 @@ class AssetViewset(viewsets.GenericViewSet,
             content = serializer.errors
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     '''
+
+class AccountAssetView(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, { "tokens": { "owner": wallet }})
+        assets = models.Asset.objects.none()
+        for token in response['tokens']:
+            asset, is_created = models.Asset.objects.get_or_create(
+                token_id = token,
+                owner = account,
+                collection = collection,
+            )
+            assets = assets.union(models.Asset.objects.filter(pk=asset.pk))
+        serializer = self.serializer_class(assets, many=True)
+        #user = User.objects.get(username=request.user)
+        #queryset = models.UserAddress.objects.filter(user=user)
+        #serializer = serializers.UserAddressSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class EmailViewset(viewsets.GenericViewSet,
     mixins.ListModelMixin,

@@ -126,6 +126,10 @@ class AssetSerializer(serializers.ModelSerializer):
             'id': asset.pk
         }
 
+class AccountAssetSerializer(serializers.Serializer):
+    account = AccountSerializer(read_only=True)
+    assets = AssetSerializer(read_only=True, many=True)
+
 class EmailSerializer(serializers.ModelSerializer):
     """Serializer for Email objects"""
     class Meta:

@@ -20,6 +20,8 @@ from django.conf.urls import url, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+from account import views as account_views
+
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -48,6 +50,9 @@ urlpatterns = [
     url(r'^user/', include('user.urls')),
     url(r'^fantasy/', include('fantasy.urls')),
     url(r'^account/', include('account.urls')),
+
+    #custom urls
+    path('account/assets/account/<str:wallet>/collection/<str:contract>', account_views.AccountAssetView.as_view()),
 
     #admin
     path('admin/', admin.site.urls),
