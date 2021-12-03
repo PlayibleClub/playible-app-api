@@ -19,7 +19,6 @@ async def get_tx_info(tx_hash):
     except:
         raise serializers.ValidationError('Failed to retrieve information from the blockchain: ' + str(e))
 
-
 @async_to_sync
 async def query_contract(contract_addr, query_msg):
     try:

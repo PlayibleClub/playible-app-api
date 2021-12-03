@@ -73,6 +73,7 @@ class AssetSerializer(serializers.ModelSerializer):
     """Serializer for account objects"""
     token_info = serializers.SerializerMethodField()
     collection = CollectionSerializer()
+    owner = AccountSerializer(read_only=True)
     #contract_addr = serializers.CharField(write_only=True)
 
     class Meta:
@@ -161,10 +162,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'asset']
 
     def validate(self, data):
-        #owner, is_created = models.Account.objects.get_or_create(
-        #    #temp data
-        #    wallet_addr="0xAntman"
-        #)
         
         try:
             owner_info = terra.query_contract(data["collection"], { "owner_of":{ "token_id": data["token_id"]}})
@@ -182,14 +179,13 @@ class SalesOrderSerializer(serializers.ModelSerializer):
             collection=collection,
             owner=owner
         )
-
-        salesOrder = models.SalesOrder.objects.get(
-            asset=asset
-        )
-
-        if salesOrder is not None and self.instance is None:
+        try:
+            salesOrder = models.SalesOrder.objects.get(
+                asset=asset
+            )
             raise serializers.ValidationError('The asset has already been listed for sale.')
-            
+        except models.SalesOrder.DoesNotExist:
+            pass
 
         data['asset'] = asset
         return data
