@@ -73,6 +73,7 @@ class AssetSerializer(serializers.ModelSerializer):
     """Serializer for account objects"""
     token_info = serializers.SerializerMethodField()
     collection = CollectionSerializer()
+    owner = AccountSerializer(read_only=True)
     #contract_addr = serializers.CharField(write_only=True)
 
     class Meta:
