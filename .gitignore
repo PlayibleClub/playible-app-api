@@ -129,3 +129,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.ppk
+.vs/fantasy-app-api/v16/.suo
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json

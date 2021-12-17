@@ -154,7 +154,7 @@ class SalesOrderSerializer(serializers.ModelSerializer):
     """Serializer for Sales Order objects"""
     collection = serializers.CharField(write_only=True)
     token_id = serializers.CharField(write_only=True)
-    #asset = AssetSerializer(read_only=True)
+    asset = AssetSerializer(read_only=True)
 
     class Meta:
         model = models.SalesOrder
@@ -162,7 +162,6 @@ class SalesOrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'asset']
 
     def validate(self, data):
-        
         try:
             owner_info = terra.query_contract(data["collection"], { "owner_of":{ "token_id": data["token_id"]}})
         except:
