@@ -19,8 +19,7 @@ class Position(BaseInfo):
 class Athlete(BaseInfo):
   first_name = models.CharField(max_length=155)
   last_name = models.CharField(max_length=155)
-  terra_id = models.CharField(max_length=155, unique=True)
-  api_id = models.IntegerField(unique=True)
+  api_id = models.IntegerField(unique=True) #athlete id from sportsdata
   team = models.ForeignKey("Team", on_delete=models.CASCADE)
   positions = models.ManyToManyField('Position')
   jersey = models.IntegerField(null=True, blank=True)
@@ -63,11 +62,11 @@ class StatsInfo(BaseInfo):
 
 class Team(BaseInfo):
   location = models.CharField(max_length=155)
-  nickname = models.CharField(max_length=155)
+  name = models.CharField(max_length=155)
   api_id = models.IntegerField(unique=True)
 
   def __str__(self):
-      return self.location + ' ' + self.nickname
+      return self.location + ' ' + self.name
   
   class Meta:
       ordering = ['-created_at', '-updated_at']

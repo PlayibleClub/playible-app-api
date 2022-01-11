@@ -9,8 +9,9 @@ import requests
 from requests.exceptions import HTTPError
 from django.conf import settings
 
-HOST = 'https://api.sportsdata.io/v3/nba/'
-KEY = os.environ.get('SPORTDATAIO_KEY', '')
+HOST = 'http://api.stats.com/v1/stats/basketball/nba/'
+PUBLIC_KEY = os.environ.get('STATSPERFORM_PUBLIC_KEY', '')
+SECRET_KEY = os.environ.get('STATSPERFORM_PRIVATE_KEY', '')
 
 def get(url, args=[], stream=False):
   try:
@@ -19,7 +20,7 @@ def get(url, args=[], stream=False):
     else:
       params = {}
 
-    params.update(get_auth())
+    params.update(get_sig())
 
     url = HOST + url
     response = requests.get(
@@ -31,7 +32,7 @@ def get(url, args=[], stream=False):
 
     return {
       'status': settings.RESPONSE['STATUS_OK'],
-      'response': response.json()
+      'response': response.json().get('apiResults')[0]
     }
 
   except requests.Timeout:
@@ -50,9 +51,14 @@ def get(url, args=[], stream=False):
       'response': f'HTTP error occurred: {http_err}'
     }
 
-def get_auth():
+def get_sig():
+  timestamp = repr(int(time.time()))
+  all = str.encode(PUBLIC_KEY + SECRET_KEY + timestamp)
+  signature = hashlib.sha256(all).hexdigest()
   params = {
-    'key': KEY
+    'content-type': 'application/json',
+    'api_key': PUBLIC_KEY,
+    'sig': signature 
   }
   
   return params

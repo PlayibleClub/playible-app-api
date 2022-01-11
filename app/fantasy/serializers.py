@@ -12,7 +12,7 @@ class TeamListSerializer(serializers.ListSerializer):
         api_id = team_data['api_id'],
         defaults = {
           'location': team_data['location'],
-          'nickname': team_data['nickname'],
+          'name': team_data['name'],
         }
       )
       teams_list.append({
@@ -27,7 +27,7 @@ class TeamListSerializer(serializers.ListSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
   location = serializers.CharField(required=False, allow_null=True)
-  nickname = serializers.CharField(required=False, allow_null=True)
+  name = serializers.CharField(required=False, allow_null=True)
   api_id = serializers.IntegerField(
     required=False, 
     allow_null=True
@@ -35,7 +35,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = models.Team
-    fields = ['id', 'location', 'nickname', 'api_id']
+    fields = ['id', 'location', 'name', 'api_id']
     read_only_fields = ['id']
     list_serializer_class = TeamListSerializer
 
@@ -71,7 +71,6 @@ class AthleteAPISerializer(serializers.ModelSerializer):
     fields = [
       'first_name',
       'last_name',
-      'terra_id',
       'api_id',
       'team',
       'positions',
