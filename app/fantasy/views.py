@@ -43,17 +43,10 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
   serializer_class = serializers.TeamSerializer
   permission_classes = [AllowAny]
 
-  def create(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)
-    if(serializer.is_valid()):
-      serializer.save()
-      return Response(serializer.data, status=status.HTTP_201_CREATED)
-    else:
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-  """
+  
   @swagger_auto_schema(operation_description="Retrieves all NBA team data and saves it into the database.")
   def create(self, request, *args, **kwargs):
-    response = requests.get('teams/')
+    response = requests.get('scores/json/teams')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
       team_data = utils.parse_team_list_data(response['response'])
       serializer = self.get_serializer(data=team_data, many=True)
@@ -68,7 +61,6 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
         "response": response['response']
       }
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
-    """
 
 class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """Manage athletes in the database"""
@@ -80,13 +72,18 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
     operation_description= "Creates an athlete instance in the database with the data from stats perform. The input could either be the name of the athlete or its corresponding id from stats perform."
   )
   def create(self, request, *args, **kwargs):
+    response = requests.get('scores/json/Players')
+
+
+
+    """
     serializer = serializers.AthleteAPISerializer(data=request.data)
     if(serializer.is_valid()):
       serializer.save()
       return Response(serializer.data, status=status.HTTP_200_OK)
     else:
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    """
+    
     response = requests.get('participants/')
     if(response['status'] == settings.RESPONSE['STATUS_OK']):
 
@@ -111,7 +108,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
         "response": response['response']
       }
       return Response(content, status=status.HTTP_400_BAD_REQUEST)
-    """
+    
 
   @swagger_auto_schema(operation_description="Updates an athlete instance to reflect stats perform data.")
   def partial_update(self, request, pk=None):
@@ -152,7 +149,7 @@ class AthleteViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
   @swagger_auto_schema(auto_schema=None)
   def update(self, request, *args, **kwargs):
     return Response(status=status.HTTP_403_FORBIDDEN)
-
+"""
 
 class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
   """Manage athlete season data in the database"""

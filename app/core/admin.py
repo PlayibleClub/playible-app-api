@@ -37,8 +37,8 @@ admin.site.register(fantasy.StatsInfo)
 
 @admin.register(fantasy.Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'terra_id', 'api_id')
+    list_display = ('first_name', 'last_name', 'api_id')
 
 @admin.register(fantasy.Team)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'location', 'nickname')
+    list_display = ('id', 'location', 'name')

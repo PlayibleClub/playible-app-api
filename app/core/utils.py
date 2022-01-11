@@ -2,23 +2,20 @@
 from django.conf import settings
 
 def parse_team_list_data(data):
-  conference_list = data.get('league').get('season').get('conferences')
   teams = []
-  for conference in conference_list:
-    for division in conference.get('divisions'):
-      for team in division.get('teams'):
-        teams.append({
-          "location": team.get('location'),
-          "nickname": team.get('nickname'),
-          "api_id": team.get('teamId')
-        })
+  for team in data:
+    teams.append({
+      "location": team.get('City'),
+      "name": team.get('Name'),
+      "api_id": team.get('TeamID')
+    })
   return teams
 
-def filter_participant_data(data, participant):
-  player_list = data.get('league').get('players')
-  for player in player_list:
+def filter_athlete_data(data, participant):
+  athlete_list = data.get('league').get('players')
+  for athlete in athlete_list:
     if participant.get('api_id', None) is not None:
-      if player.get('playerId') == participant.get('api_id'):
+      if athlete.get('playerId') == participant.get('api_id'):
         return {
           'first_name': player.get('firstName'),
           'last_name': player.get('lastName'),
