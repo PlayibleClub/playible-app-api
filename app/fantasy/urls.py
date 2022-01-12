@@ -6,7 +6,7 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'team', views.TeamViewSet)
-router.register(r'athlete', views.AthleteViewSet)
+router.register(r'athlete', views.CreateAthleteViewSet)
 router.register(r'athleteseason', views.AthleteSeasonViewSet)
 
 urlpatterns = [
