@@ -63,7 +63,7 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
-class CreateAthleteViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Manage athletes in the database"""
     queryset = models.Athlete.objects.all()
     #serializer_class = serializers.AthleteAPISerializer
@@ -88,6 +88,14 @@ class CreateAthleteViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 "response": response['response']
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+    #TODO: Partial update for athlete data
+
+class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Manage athletes in the database"""
+    queryset = models.Athlete.objects.all()
+    serializer_class = serializers.AthleteSerializer
+    permission_classes = [AllowAny]
 
 class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """Manage athlete season data in the database"""
