@@ -11,6 +11,22 @@ def parse_team_list_data(data):
     })
   return teams
 
+def parse_athlete_list_data(data):
+  athletes = []
+  for athlete in data:
+    athletes.append({
+      'first_name': athlete.get('FirstName'),
+      'last_name': athlete.get('LastName'),
+      'api_id': athlete.get('PlayerID'),
+      'team_id': athlete.get('TeamID'),
+      'position': athlete.get('Position'),
+      'salary': athlete.get('Salary'),
+      'jersey': athlete.get('Jersey'),
+      'is_active': athlete.get('Status'),
+      'is_injured': athlete.get('InjuryStatus')
+    })
+  return athletes
+
 def filter_athlete_data(data, participant):
   athlete_list = data.get('league').get('players')
   for athlete in athlete_list:

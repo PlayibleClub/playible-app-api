@@ -62,167 +62,158 @@ class PositionSerializer(serializers.ModelSerializer):
 
 #Serializer for Stats Perform API data
 class AthleteAPISerializer(serializers.ModelSerializer):
-  #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
-  #positions = serializers.PrimaryKeyRelatedField(queryset=models.Position.objects.all(), many=True)
-  positions = PositionSerializer(many=True)
+    team_id = serializers.IntegerField()
+    is_active = serializers.CharField(allow_null=True)
+    is_injured = serializers.CharField(allow_null=True)
+    #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
+    #positions = serializers.PrimaryKeyRelatedField(queryset=models.Position.objects.all(), many=True)
+    #positions = PositionSerializer(many=True)
 
-  class Meta:
-    model = models.Athlete
-    fields = [
-      'first_name',
-      'last_name',
-      'api_id',
-      'team',
-      'positions',
-      'jersey',
-      'is_active',
-      'is_injured',
-      'is_suspended'
-    ]
-    read_only_fields = [
-      'is_active',
-      'is_injured',
-      'is_suspended'
-    ]
+    class Meta:
+        model = models.Athlete
+        fields = [
+            'first_name',
+            'last_name',
+            'api_id',
+            'team_id',
+            'position',
+            'salary',
+            'jersey',
+            'is_active',
+            'is_injured'
+        ]
+        extra_kwargs = {
+            'team_id': { 'write_only': True },
+            'is_active': { 'write_only': True },
+            'is_injured': { 'write_only': True }
+        }
 
-  def validate(self, data):
-    positions_id_list = []
+    def validate(self, data):
+        if data['is_active'] == 'Active':
+            data['is_active'] = True
+        else:
+            data['is_active'] = False
 
-    for position_data in data['positions']:
-      position, is_created = models.Position.objects.get_or_create(
-        name=position_data['name'], 
-        abbreviation=position_data['abbreviation'],
-      )
+        if data['is_injured'] is None:
+            data['is_injured'] = False
+        else:
+            data['is_injured'] = True
 
-      positions_id_list.append(position)
-
-    data['positions'] = positions_id_list
-
-    return data
+        data['team'] = models.Team.objects.get(api_id=data['team_id'])
+        
+        return data
     
-  def save(self):
-    if self.instance is not None:
-      athlete = self.instance
-      team = models.Team.objects.get(api_id=self.validated_data.get('team').id)
-      athlete.first_name = self.validated_data.get('first_name')
-      athlete.last_name = self.validated_data.get('last_name')
-      athlete.terra_id = self.validated_data.get('terra_id', self.instance.terra_id)
-      athlete.api_id = self.validated_data.get('api_id')
-      athlete.team = team
-    else:
-      athlete = models.Athlete(
-        first_name = self.validated_data['first_name'],
-        last_name = self.validated_data['last_name'],
-        terra_id = self.validated_data['terra_id'],
-        api_id = self.validated_data['api_id'],
-        team = self.validated_data['team'],
-      )
-    athlete.save()
-    athlete.positions.set(self.validated_data['positions'])
+    def save(self):
+        if self.instance is not None:
+            self.instance.first_name = self.validated_data.get('first_name')
+            self.instance.last_name = self.validated_data.get('last_name')
+            self.instance.api_id = self.validated_data.get('api_id')
+            self.instance.position = self.validated_data.get('position')
+            self.instance.salary = self.validated_data.get('salary')
+            self.instance.jersey = self.validated_data.get('jersey')
+            self.instance.is_active = self.validated_data.get('is_active')
+            self.instance.is_injured = self.validated_data.get('is_injured')
+            self.instance.team = self.validated_data.get('team')
+        else:
+            athlete = models.Athlete(
+                first_name = self.validated_data['first_name'],
+                last_name = self.validated_data['last_name'],
+                api_id = self.validated_data['api_id'],
+                position = self.validated_data['position'],
+                salary = self.validated_data['salary'],
+                jersey = self.validated_data['jersey'],
+                is_active = self.validated_data['is_active'],
+                is_injured = self.validated_data['is_injured'],
+                team = self.validated_data.get('team'),
+            )
+            athlete.save()
 
-    return {
-      'message': "Athlete added.",
-      'id': athlete.pk
-    }
+        return {
+            'message': "Athlete added.",
+            'id': athlete.pk
+        }
 
 class AthleteSerializer(serializers.ModelSerializer):
-  api_id = serializers.IntegerField(
-    required=False, 
-    allow_null=True
-  )
-  team = TeamSerializer(read_only=True)
-  positions = PositionSerializer(many=True, read_only=True)
-
-  class Meta:
-    model = models.Athlete
-    fields = [
-      'id',
-      'first_name',
-      'last_name',
-      'terra_id',
-      'api_id',
-      'team',
-      'positions',
-      'jersey',
-      'is_active',
-      'is_injured',
-      'is_suspended'
-    ]
-    read_only_fields = [
-      'id',
-      'team',
-      'positions',
-      'jersey',
-      'is_active',
-      'is_injured',
-      'is_suspended'
-    ]
+    class Meta:
+        model = models.Athlete
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'api_id',
+            'team',
+            'position',
+            'salary',
+            'jersey',
+            'is_active',
+            'is_injured',
+        ]
 
 #Used for API data retrieval
 class AthleteSeasonAPISerializer(serializers.ModelSerializer):
-  fantasy_score = serializers.SerializerMethodField()
-  class Meta:
-    model = models.AthleteSeason
-    fields = [
-      'id',
-      'athlete',
-      'season',
-      'fantasy_score',
-      'points',
-      'rebounds',
-      'assists',
-      'blocks',
-      'turnovers'
-    ]
-    read_only_fields = [
-      'id',
-      'fantasy_score',
-    ]
+    fantasy_score = serializers.SerializerMethodField()
+    class Meta:
+        model = models.AthleteSeason
+        fields = [
+            'id',
+            'athlete',
+            'season',
+            'fantasy_score',
+            'points',
+            'rebounds',
+            'assists',
+            'blocks',
+            'turnovers'
+        ]
+        read_only_fields = [
+            'id',
+            'fantasy_score',
+        ]
 
-  def get_fantasy_score(self, obj):
-    stats_info_list = models.StatsInfo.objects.filter(is_active=True)
-    fantasy_score = 0
-    for stats_info in stats_info_list:
-      try:
-        fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
-      except AttributeError:
-        pass
-    return fantasy_score
+    def get_fantasy_score(self, obj):
+        stats_info_list = models.StatsInfo.objects.filter(is_active=True)
+        fantasy_score = 0
+        for stats_info in stats_info_list:
+            try:
+                fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
+            except AttributeError:
+                pass
+        return fantasy_score
 
 
 class AthleteSeasonSerializer(serializers.ModelSerializer):
-  fantasy_score = serializers.SerializerMethodField()
+    fantasy_score = serializers.SerializerMethodField()
 
-  class Meta:
-    model = models.AthleteSeason
-    fields = [
-      'id',
-      'athlete',
-      'season',
-      'fantasy_score',
-      'points',
-      'rebounds',
-      'assists',
-      'blocks',
-      'turnovers'
-    ]
-    read_only_fields = [
-      'id',
-      'season', #latest season by default
-      'fantasy_score',
-      'points',
-      'rebounds',
-      'assists',
-      'blocks',
-      'turnovers'
-    ]
+    class Meta:
+        model = models.AthleteSeason
+        fields = [
+            'id',
+            'athlete',
+            'season',
+            'fantasy_score',
+            'points',
+            'rebounds',
+            'assists',
+            'blocks',
+            'turnovers'
+        ]
+        read_only_fields = [
+            'id',
+            'season', #latest season by default
+            'fantasy_score',
+            'points',
+            'rebounds',
+            'assists',
+            'blocks',
+            'turnovers'
+        ]
 
-  def get_fantasy_score(self, obj):
-    stats_info_list = models.StatsInfo.objects.filter(is_active=True)
-    fantasy_score = 0
-    for stats_info in stats_info_list:
-      try:
-        fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
-      except AttributeError:
-        pass
-    return fantasy_score
+    def get_fantasy_score(self, obj):
+        stats_info_list = models.StatsInfo.objects.filter(is_active=True)
+        fantasy_score = 0
+        for stats_info in stats_info_list:
+            try:
+                fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
+            except AttributeError:
+                pass
+        return fantasy_score

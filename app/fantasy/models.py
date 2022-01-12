@@ -17,15 +17,15 @@ class Position(BaseInfo):
 
 
 class Athlete(BaseInfo):
-  first_name = models.CharField(max_length=155)
-  last_name = models.CharField(max_length=155)
-  api_id = models.IntegerField(unique=True) #athlete id from sportsdata
-  team = models.ForeignKey("Team", on_delete=models.CASCADE)
-  positions = models.ManyToManyField('Position')
+  first_name = models.CharField(max_length=155, blank=True)
+  last_name = models.CharField(max_length=155, blank=True)
+  api_id = models.IntegerField(unique=True, blank=True) #athlete id from sportsdata
+  team = models.ForeignKey("Team", on_delete=models.CASCADE, blank=True)
+  position = models.CharField(max_length=2, blank=True)
   jersey = models.IntegerField(null=True, blank=True)
-  is_active = models.BooleanField(default=True)
-  is_injured = models.BooleanField(default=False)
-  is_suspended = models.BooleanField(default=False)
+  salary = models.IntegerField(null=True, blank=True)
+  is_active = models.BooleanField(default=True, blank=True)
+  is_injured = models.BooleanField(default=False, blank=True)
 
   def __str__(self):
       return self.first_name + ' ' + self.last_name
