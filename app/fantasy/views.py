@@ -143,3 +143,9 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
         }
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
     """
+
+class LeaderboardViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Manage athlete season data in the database"""
+    queryset = models.AthleteSeason.objects.all()
+    serializer_class = serializers.AthleteSeasonAPISerializer
+    permission_classes = [AllowAny]
