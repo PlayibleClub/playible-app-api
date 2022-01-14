@@ -66,7 +66,7 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Manage athletes in the database"""
     queryset = models.Athlete.objects.all()
-    #serializer_class = serializers.AthleteAPISerializer
+    serializer_class = serializers.BlankSerializer
     permission_classes = [AllowAny]
     
     @swagger_auto_schema(
@@ -143,3 +143,9 @@ class AthleteSeasonViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixin
         }
         return Response(content, status=status.HTTP_400_BAD_REQUEST)
     """
+
+class LeaderboardViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Manage athlete season data in the database"""
+    queryset = models.AthleteSeason.objects.all()
+    serializer_class = serializers.AthleteSeasonAPISerializer
+    permission_classes = [AllowAny]
