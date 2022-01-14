@@ -66,7 +66,7 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
 class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Manage athletes in the database"""
     queryset = models.Athlete.objects.all()
-    #serializer_class = serializers.AthleteAPISerializer
+    serializer_class = serializers.BlankSerializer
     permission_classes = [AllowAny]
     
     @swagger_auto_schema(

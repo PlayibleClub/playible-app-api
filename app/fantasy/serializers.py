@@ -227,3 +227,5 @@ class LeaderboardSerializer(serializers.Serializer):
     prize = serializers.IntegerField()
     winners = AccountLeaderboardSerializer(many=True)
 
+class BlankSerializer(serializers.Serializer):
+    pass
