@@ -218,12 +218,12 @@ class AthleteSeasonSerializer(serializers.ModelSerializer):
                 pass
         return fantasy_score
 
-class LeaderboardSerializer(serializers.Serializer):
-    prize = serializers.IntegerField()
-    winners = AccountLeaderboardSerializer(many=True)
-
 class AccountLeaderboardSerializer(serializers.Serializer):
     address = serializers.CharField(read_only=True)
     fantasy_score = serializers.IntegerField(read_only=True)
     rank = serializers.IntegerField(read_only=True)
+
+class LeaderboardSerializer(serializers.Serializer):
+    prize = serializers.IntegerField()
+    winners = AccountLeaderboardSerializer(many=True)
 
