@@ -39,27 +39,6 @@ class TeamSerializer(serializers.ModelSerializer):
     read_only_fields = ['id']
     list_serializer_class = TeamListSerializer
 
-
-class PositionSerializer(serializers.ModelSerializer):
-  name = serializers.CharField()
-  abbreviation = serializers.CharField()
-
-  class Meta:
-    model = models.Position
-    fields = ['id', 'name', 'abbreviation']
-    read_only_fields = ['id']
-
-  def save(self):
-    position, is_created = models.Position.objects.get_or_create(
-      name = self.validated_data['name'],
-      abbreviation = self.validated_data['abbreviation'],
-    )
-
-    return {
-      'message': "Position added.",
-      'id': position.pk
-    }
-
 #Serializer for Stats Perform API data
 class AthleteAPISerializer(serializers.ModelSerializer):
     team_id = serializers.IntegerField()
@@ -148,75 +127,6 @@ class AthleteSerializer(serializers.ModelSerializer):
             'is_active',
             'is_injured',
         ]
-
-#Used for API data retrieval
-class AthleteSeasonAPISerializer(serializers.ModelSerializer):
-    fantasy_score = serializers.SerializerMethodField()
-    class Meta:
-        model = models.AthleteSeason
-        fields = [
-            'id',
-            'athlete',
-            'season',
-            'fantasy_score',
-            'points',
-            'rebounds',
-            'assists',
-            'blocks',
-            'turnovers'
-        ]
-        read_only_fields = [
-            'id',
-            'fantasy_score',
-        ]
-
-    def get_fantasy_score(self, obj):
-        stats_info_list = models.StatsInfo.objects.filter(is_active=True)
-        fantasy_score = 0
-        for stats_info in stats_info_list:
-            try:
-                fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
-            except AttributeError:
-                pass
-        return fantasy_score
-
-
-class AthleteSeasonSerializer(serializers.ModelSerializer):
-    fantasy_score = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.AthleteSeason
-        fields = [
-            'id',
-            'athlete',
-            'season',
-            'fantasy_score',
-            'points',
-            'rebounds',
-            'assists',
-            'blocks',
-            'turnovers'
-        ]
-        read_only_fields = [
-            'id',
-            'season', #latest season by default
-            'fantasy_score',
-            'points',
-            'rebounds',
-            'assists',
-            'blocks',
-            'turnovers'
-        ]
-
-    def get_fantasy_score(self, obj):
-        stats_info_list = models.StatsInfo.objects.filter(is_active=True)
-        fantasy_score = 0
-        for stats_info in stats_info_list:
-            try:
-                fantasy_score = fantasy_score + getattr(obj, stats_info.key) * stats_info.multiplier
-            except AttributeError:
-                pass
-        return fantasy_score
 
 class AccountLeaderboardSerializer(serializers.Serializer):
     address = serializers.CharField(read_only=True)
