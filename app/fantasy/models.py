@@ -34,20 +34,6 @@ class Athlete(BaseInfo):
     class Meta:
         ordering = ['-created_at', '-updated_at']
 
-
-class AthleteSeason(BaseInfo):
-    athlete = models.OneToOneField("Athlete", on_delete=models.CASCADE)
-    season = models.CharField(max_length=155)
-    points = models.DecimalField(max_digits=19, decimal_places=0)
-    rebounds = models.DecimalField(max_digits=19, decimal_places=0)
-    assists = models.DecimalField(max_digits=19, decimal_places=0)
-    blocks = models.DecimalField(max_digits=19, decimal_places=0)
-    turnovers = models.DecimalField(max_digits=19, decimal_places=0)
-    
-    class Meta:
-        ordering = ['-created_at', '-updated_at']
-
-
 class StatsInfo(BaseInfo):
     name = models.CharField(max_length=155)
     key = models.CharField(max_length=155, unique=True)
@@ -76,6 +62,7 @@ class Game(BaseInfo):
     name = models.CharField(max_length=155)
     start_datetime = models.DateTimeField()
     duration = models.IntegerField() #TODO: Decide the unit of measurement (seconds/minutes/hours/days)
+    prize = models.DecimalField(max_digits=19, decimal_places=2)
 
     def __str__(self):
         return self.name

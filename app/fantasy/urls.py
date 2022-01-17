@@ -8,7 +8,6 @@ router = DefaultRouter()
 router.register(r'team', views.TeamViewSet)
 router.register(r'athlete/api', views.AthleteAPIViewSet)
 router.register(r'athlete', views.AthleteViewSet)
-router.register(r'athleteseason', views.AthleteSeasonViewSet)
 
 urlpatterns = [
   url(r'', include(router.urls)),
