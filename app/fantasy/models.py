@@ -2,21 +2,6 @@ from django.db import models
 from core.models import BaseInfo
 from account.models import Account, Asset
 
-
-class Position(BaseInfo):
-    name = models.CharField(max_length=155)
-    abbreviation = models.CharField(max_length=2)
-    
-    def __str__(self):
-        return self.name
-    
-    class Meta:
-        ordering = ['-created_at', '-updated_at']
-        constraints = [
-            models.UniqueConstraint(fields=['name','abbreviation'], name='unique_abbreviation'),
-        ]
-
-
 class Athlete(BaseInfo):
     first_name = models.CharField(max_length=155, blank=True)
     last_name = models.CharField(max_length=155, blank=True)

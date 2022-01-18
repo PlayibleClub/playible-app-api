@@ -129,11 +129,11 @@ class AthleteSerializer(serializers.ModelSerializer):
         ]
 
 class AccountLeaderboardSerializer(serializers.Serializer):
-    address = serializers.CharField(read_only=True)
-    fantasy_score = serializers.IntegerField(read_only=True)
-    rank = serializers.IntegerField(read_only=True)
+    address = serializers.CharField()
+    fantasy_score = serializers.IntegerField()
+    rank = serializers.IntegerField()
 
-class LeaderboardSerializer(serializers.Serializer):
+class GameLeaderboardSerializer(serializers.Serializer):
     prize = serializers.IntegerField()
     winners = AccountLeaderboardSerializer(many=True)
 
