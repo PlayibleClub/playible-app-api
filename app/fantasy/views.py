@@ -70,3 +70,41 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     queryset = models.Athlete.objects.all()
     serializer_class = serializers.AthleteSerializer
     permission_classes = [AllowAny]
+
+class GameLeaderboardView(generics.GenericAPIView):
+    """Manage athletes in the database"""
+    queryset = models.Game.objects.all()
+    serializer_class = serializers.GameLeaderboardSerializer
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk=None):
+        try:
+            game = self.get_object() #get game object
+            #TODO: get the top 10 game accounts
+            #hard coded data for now
+            game_accounts = [
+                {
+                    "address": "sample address1",
+                    "fantasy_score": 10,
+                    "rank": 1
+                },
+                {
+                    "address": "sample address2",
+                    "fantasy_score": 5,
+                    "rank": 2
+                }
+            ]
+            serializer = self.get_serializer(
+                data={
+                    "prize": game.prize,
+                    "winners": game_accounts
+                }
+            )
+            serializer.is_valid(raise_exception=True)
+            content = serializer.data
+            return Response(content, status=status.HTTP_200_OK)
+        except:
+            return Response("An error has occured", status=status.HTTP_400_BAD_REQUEST)
+
+
+

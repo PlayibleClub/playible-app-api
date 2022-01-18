@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from account import views as account_views
+from fantasy import views as fantasy_views
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -53,6 +54,7 @@ urlpatterns = [
 
     #custom urls
     path('account/assets/account/<str:wallet>/collection/<str:contract>', account_views.AccountAssetView.as_view()),
+    path('fantasy/game/<int:pk>/leaderboard', fantasy_views.GameLeaderboardView.as_view()),
 
     #admin
     path('admin/', admin.site.urls),
