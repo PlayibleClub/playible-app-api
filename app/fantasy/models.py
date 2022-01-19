@@ -7,7 +7,7 @@ class Athlete(BaseInfo):
     last_name = models.CharField(max_length=155, blank=True)
     api_id = models.IntegerField(unique=True, blank=True) #athlete id from sportsdata
     team = models.ForeignKey("Team", on_delete=models.CASCADE, blank=True)
-    position = models.CharField(max_length=2, blank=True)
+    position = models.CharField(max_length=2, blank=True, null=True)
     jersey = models.IntegerField(null=True, blank=True)
     salary = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True, blank=True)

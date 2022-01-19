@@ -2,12 +2,11 @@ import sys
 import requests
 
 HEADERS = {"Content-Type": "application/json"}
-#TODO: Change this to the deployed API URL
-BASE_URL = "http://localhost:8000"
+BASE_URL = "https://api.playible.io/"
 
 
 def main(game_id):
-    url = BASE_URL + "/fantasy/game/" + game_id + "/leaderboard"
+    url = BASE_URL + "fantasy/game/" + game_id + "/leaderboard"
     result = requests.request(
         "GET", (url)
     )
