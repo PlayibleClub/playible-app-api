@@ -44,7 +44,6 @@ class AthleteAPISerializer(serializers.ModelSerializer):
     team_id = serializers.IntegerField()
     is_active = serializers.CharField(allow_null=True)
     is_injured = serializers.CharField(allow_null=True)
-    #team = serializers.PrimaryKeyRelatedField(queryset=models.Team.objects.all())
     #positions = serializers.PrimaryKeyRelatedField(queryset=models.Position.objects.all(), many=True)
     #positions = PositionSerializer(many=True)
 
@@ -79,7 +78,7 @@ class AthleteAPISerializer(serializers.ModelSerializer):
             data['is_injured'] = True
 
         data['team'] = models.Team.objects.get(api_id=data['team_id'])
-        
+        data['team_id'] = data['team'].id
         return data
     
     def save(self):
