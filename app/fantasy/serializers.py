@@ -127,6 +127,14 @@ class AthleteSerializer(serializers.ModelSerializer):
             'is_injured',
         ]
 
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Game
+        fields = [
+            'id',
+            'name',
+        ]
+
 class AccountLeaderboardSerializer(serializers.Serializer):
     address = serializers.CharField()
     fantasy_score = serializers.IntegerField()
