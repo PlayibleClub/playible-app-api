@@ -40,7 +40,7 @@ admin.site.register(user.User, UserAdmin)
 
 @admin.register(fantasy.Athlete)
 class AthleteAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'api_id')
+    list_display = ('first_name', 'last_name', 'api_id', 'position')
 
 @admin.register(fantasy.Team)
 class AthleteAdmin(admin.ModelAdmin):

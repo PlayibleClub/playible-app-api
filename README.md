@@ -3,7 +3,7 @@
 ## Creating Virtual Env
 pip install virtualenv
 
-python3 -m venv env
+windows: python3 -m venv env | ubuntu: virtualenv venv
 
 source env/bin/activate
 

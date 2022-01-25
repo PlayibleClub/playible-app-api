@@ -71,6 +71,12 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     serializer_class = serializers.AthleteSerializer
     permission_classes = [AllowAny]
 
+class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    """Manage games in the database"""
+    queryset = models.Game.objects.all()
+    serializer_class = serializers.GameSerializer
+    permission_classes = [AllowAny]
+
 class GameLeaderboardView(generics.GenericAPIView):
     """Manage athletes in the database"""
     queryset = models.Game.objects.all()
