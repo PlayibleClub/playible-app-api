@@ -1,54 +1,58 @@
 from rest_framework import serializers, status, validators
 
-from fantasy import models
+from fantasy.models import *
 from core import utils
 
 # Fantasy data serializers
+
+
 class TeamListSerializer(serializers.ListSerializer):
-  def save(self):
-    teams_list = []
-    for team_data in self.validated_data:
-      team, is_created = models.Team.objects.get_or_create(
-        api_id = team_data['api_id'],
-        defaults = {
-          'location': team_data['location'],
-          'name': team_data['name'],
+    def save(self):
+        teams_list = []
+        for team_data in self.validated_data:
+            team, is_created = Team.objects.get_or_create(
+                api_id=team_data['api_id'],
+                defaults={
+                    'location': team_data['location'],
+                    'name': team_data['name'],
+                }
+            )
+            teams_list.append({
+                "is_created": is_created,
+                "data": team
+            })
+        return {
+            'message': "Teams added.",
+            'data': teams_list
         }
-      )
-      teams_list.append({
-        "is_created": is_created,
-        "data": team
-      })
-    return {
-      'message': "Teams added.",
-      'data': teams_list
-    }
 
 
 class TeamSerializer(serializers.ModelSerializer):
-  location = serializers.CharField(required=False, allow_null=True)
-  name = serializers.CharField(required=False, allow_null=True)
-  api_id = serializers.IntegerField(
-    required=False, 
-    allow_null=True
-  )
+    location = serializers.CharField(required=False, allow_null=True)
+    name = serializers.CharField(required=False, allow_null=True)
+    api_id = serializers.IntegerField(
+        required=False,
+        allow_null=True
+    )
 
-  class Meta:
-    model = models.Team
-    fields = ['id', 'location', 'name', 'api_id']
-    read_only_fields = ['id']
-    list_serializer_class = TeamListSerializer
+    class Meta:
+        model = Team
+        fields = ['id', 'location', 'name', 'api_id']
+        read_only_fields = ['id']
+        list_serializer_class = TeamListSerializer
 
-#Serializer for Stats Perform API data
+# Serializer for Stats Perform API data
+
+
 class AthleteAPISerializer(serializers.ModelSerializer):
     team_id = serializers.IntegerField()
     is_active = serializers.CharField(allow_null=True)
     is_injured = serializers.CharField(allow_null=True)
-    #positions = serializers.PrimaryKeyRelatedField(queryset=models.Position.objects.all(), many=True)
+    #positions = serializers.PrimaryKeyRelatedField(queryset=Position.objects.all(), many=True)
     #positions = PositionSerializer(many=True)
 
     class Meta:
-        model = models.Athlete
+        model = Athlete
         fields = [
             'first_name',
             'last_name',
@@ -61,9 +65,9 @@ class AthleteAPISerializer(serializers.ModelSerializer):
             'is_injured'
         ]
         extra_kwargs = {
-            'team_id': { 'write_only': True },
-            'is_active': { 'write_only': True },
-            'is_injured': { 'write_only': True }
+            'team_id': {'write_only': True},
+            'is_active': {'write_only': True},
+            'is_injured': {'write_only': True}
         }
 
     def validate(self, data):
@@ -77,10 +81,10 @@ class AthleteAPISerializer(serializers.ModelSerializer):
         else:
             data['is_injured'] = True
 
-        data['team'] = models.Team.objects.get(api_id=data['team_id'])
+        data['team'] = Team.objects.get(api_id=data['team_id'])
         data['team_id'] = data['team'].id
         return data
-    
+
     def save(self):
         if self.instance is not None:
             self.instance.first_name = self.validated_data.get('first_name')
@@ -93,16 +97,16 @@ class AthleteAPISerializer(serializers.ModelSerializer):
             self.instance.is_injured = self.validated_data.get('is_injured')
             self.instance.team = self.validated_data.get('team')
         else:
-            athlete = models.Athlete(
-                first_name = self.validated_data['first_name'],
-                last_name = self.validated_data['last_name'],
-                api_id = self.validated_data['api_id'],
-                position = self.validated_data['position'],
-                salary = self.validated_data['salary'],
-                jersey = self.validated_data['jersey'],
-                is_active = self.validated_data['is_active'],
-                is_injured = self.validated_data['is_injured'],
-                team = self.validated_data.get('team'),
+            athlete = Athlete(
+                first_name=self.validated_data['first_name'],
+                last_name=self.validated_data['last_name'],
+                api_id=self.validated_data['api_id'],
+                position=self.validated_data['position'],
+                salary=self.validated_data['salary'],
+                jersey=self.validated_data['jersey'],
+                is_active=self.validated_data['is_active'],
+                is_injured=self.validated_data['is_injured'],
+                team=self.validated_data.get('team'),
             )
             athlete.save()
 
@@ -111,9 +115,10 @@ class AthleteAPISerializer(serializers.ModelSerializer):
             'id': athlete.pk
         }
 
+
 class AthleteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Athlete
+        model = Athlete
         fields = [
             'id',
             'first_name',
@@ -127,22 +132,37 @@ class AthleteSerializer(serializers.ModelSerializer):
             'is_injured',
         ]
 
+
 class GameSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Game
+        model = Game
         fields = [
             'id',
             'name',
         ]
+
+
+class GameCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = [
+            'name',
+            'start_datetime',
+            'duration',
+            'prize'
+        ]
+
 
 class AccountLeaderboardSerializer(serializers.Serializer):
     address = serializers.CharField()
     fantasy_score = serializers.IntegerField()
     rank = serializers.IntegerField()
 
+
 class GameLeaderboardSerializer(serializers.Serializer):
     prize = serializers.IntegerField()
     winners = AccountLeaderboardSerializer(many=True)
+
 
 class BlankSerializer(serializers.Serializer):
     pass
