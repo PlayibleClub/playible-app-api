@@ -34,7 +34,6 @@ admin.site.register(account.Collection)
 admin.site.register(account.SalesOrder)
 admin.site.register(fantasy.Game)
 admin.site.register(fantasy.GameSchedule)
-admin.site.register(fantasy.GameTeam)
 admin.site.register(fantasy.GameAthlete)
 admin.site.register(fantasy.GameAsset)
 admin.site.register(fantasy.GameAthleteStat)
@@ -43,9 +42,15 @@ admin.site.register(user.User, UserAdmin)
 
 @admin.register(fantasy.Athlete)
 class AthleteAdmin(admin.ModelAdmin):
+    search_fields = ["api_id"]
     list_display = ('first_name', 'last_name', 'api_id', 'position')
 
 
 @admin.register(fantasy.Team)
-class AthleteAdmin(admin.ModelAdmin):
+class TeamAdmin(admin.ModelAdmin):
     list_display = ('id', 'location', 'name')
+
+
+@admin.register(fantasy.GameTeam)
+class GameTeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'fantasy_score')

@@ -1,3 +1,4 @@
+from apps.account.models import Collection
 from rest_framework import serializers, status, validators
 
 from apps.fantasy.models import *
@@ -163,6 +164,15 @@ class GameAthleteSerializer(serializers.Serializer):
     contract_addr = serializers.CharField()
 
 
+class GameTeamDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameTeam
+        fields = [
+            'name',
+            'fantasy_score',
+        ]
+
+
 class GameTeamCreateSerializer(serializers.Serializer):
     name = serializers.CharField()
     game = serializers.IntegerField()
@@ -174,13 +184,13 @@ class GameTeamCreateSerializer(serializers.Serializer):
         athletes = data['athletes']
 
         errors = []
-        game = None
+        game_obj = None
         athlete_objs = []
 
         # Check if game id exists
         try:
-            game = Game.objects.get(id=game_id)
-            data['game'] = game
+            game_obj = Game.objects.get(id=game_id)
+            data['game_obj'] = game_obj
         except Game.DoesNotExist:
             errors.append('Game does not exist.')
 
@@ -204,9 +214,45 @@ class GameTeamCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         name = validated_data['name']
-        game = validated_data['game']
+        game = validated_data['game_obj']
         wallet_addr = validated_data['wallet_addr']
         athlete_objs = validated_data['athlete_objs']
+        athletes = validated_data['athletes']
+
+        account, created = Account.objects.get_or_create(
+            username=wallet_addr,
+            wallet_addr=wallet_addr
+        )
+
+        game_team = GameTeam.objects.create(
+            name=name,
+            game=game,
+            account=account
+        )
+
+        for index, athlete_obj in enumerate(athlete_objs):
+            collection, created = Collection.objects.get_or_create(
+                contract_addr=athletes[index]['contract_addr']
+            )
+            asset, created = Asset.objects.get_or_create(
+                token_id=athletes[index]['token_id'],
+                owner=account,
+                collection=collection
+            )
+            game_athlete, created = GameAthlete.objects.get_or_create(
+                game=game,
+                athlete=athlete_obj,
+            )
+            game_asset, created = GameAsset.objects.get_or_create(
+                game_team=game_team,
+                game_athlete=game_athlete,
+                asset=asset
+            )
+            # game_athlete_stat, created = GameAthleteStat.objects.get_or_create(
+            #     game_athlete=game_athlete,
+            # )
+
+        return game_team
 
 
 class AccountLeaderboardSerializer(serializers.Serializer):

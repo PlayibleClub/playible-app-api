@@ -89,7 +89,8 @@ class GameSchedule(BaseInfo):
 class GameTeam(BaseInfo):
     name = models.CharField(max_length=155)
     game = models.ForeignKey("Game", on_delete=models.CASCADE, related_name="teams")
-    account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    fantasy_score = models.DecimalField(max_digits=19, decimal_places=2, default=0)
 
     def __str__(self):
         return self.name
@@ -99,7 +100,7 @@ class GameTeam(BaseInfo):
 
 
 class GameAthlete(BaseInfo):
-    game = models.OneToOneField("Game", on_delete=models.CASCADE)
+    game = models.ForeignKey("Game", on_delete=models.CASCADE)
     athlete = models.ForeignKey("Athlete", on_delete=models.CASCADE)
 
     class Meta:
@@ -108,9 +109,9 @@ class GameAthlete(BaseInfo):
 
 class GameAsset(BaseInfo):
     game_team = models.ForeignKey("GameTeam", on_delete=models.CASCADE, related_name="assets")
-    game_athlete = models.OneToOneField(
-        "GameAthlete", on_delete=models.CASCADE)
-    asset = models.OneToOneField(Asset, on_delete=models.CASCADE)
+    game_athlete = models.ForeignKey(
+        "GameAthlete", on_delete=models.CASCADE, related_name="asset")
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
@@ -118,10 +119,10 @@ class GameAsset(BaseInfo):
 
 class GameAthleteStat(BaseInfo):
     game_athlete = models.OneToOneField(
-        "GameAthlete", on_delete=models.CASCADE)
+        "GameAthlete", on_delete=models.CASCADE, related_name="stat")
     game_schedule = models.OneToOneField(
-        "GameSchedule", on_delete=models.CASCADE)
-    fantasy_score = models.DecimalField(max_digits=19, decimal_places=2)
+        "GameSchedule", on_delete=models.CASCADE, null=True, blank=True)
+    fantasy_score = models.DecimalField(max_digits=19, decimal_places=2, default=0)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']

@@ -1,3 +1,6 @@
+import decimal
+
+from cgitb import lookup
 from django.shortcuts import render
 from django.conf import settings
 from django.db.models import Q
@@ -15,6 +18,7 @@ from apps.fantasy.models import *
 from apps.fantasy import requests
 from apps.fantasy.serializers import *
 from apps.core import utils
+from apps.core.utils import paginate
 
 # TODO: Define permissions for create and update actions
 
@@ -90,9 +94,12 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
     queryset = Game.objects.all()
     serializer_class = GameSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'id'
 
     action_serializers = {
         'create': GameCreateSerializer,
+        'test_update_scores': None,
+        'leaderboard': GameTeamDetailSerializer
     }
 
     def get_serializer_class(self):
@@ -101,15 +108,27 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                 return self.action_serializers[self.action]
         return super(GameViewSet, self).get_serializer_class()
 
+    @paginate
+    @action(detail=True)
+    def leaderboard(self, request, id=None):
+        game = self.get_object()
+        game_teams = game.teams.order_by('-fantasy_score')
+
+        return game_teams
+
     @action(detail=False, methods=['post'])
     def test_update_scores(self, request):
-        response = requests.get('stats/json/PlayerGameStatsByDate/2017-SEP-01')
+        now = timezone.now()
+
+        date_query = now.strftime('%Y-%b-%d').upper()
+        # url = 'stats/json/PlayerGameStatsByDate/' + date_query
+        url = 'stats/json/PlayerGameStatsByDate/' + '2017-SEP-01'
+
+        response = requests.get(url)
 
         if response['status'] == settings.RESPONSE['STATUS_OK']:
             athlete_data = utils.parse_athlete_stat_data(response['response'])
 
-            # Get active games
-            now = timezone.now()
             games = Game.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gte=now))
 
             for game in games:
@@ -121,8 +140,16 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
                     for game_asset in game_assets:
                         athlete = game_asset.game_athlete.athlete
-                        data = next((item for item in athlete_data if item["api_id"] == athlete.api_id), None)
-                        pass
+
+                        if athlete:
+                            # Search athlete api id if it exists in today's game athletes
+                            data = next((item for item in athlete_data if item["api_id"] == athlete.api_id), None)
+
+                            if data:
+                                total_fantasy_score += data['fantasy_score']
+
+                    game_team.fantasy_score += decimal.Decimal(total_fantasy_score)
+                    game_team.save()
 
             return Response(athlete_data)
         else:
@@ -147,7 +174,17 @@ class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.C
         if hasattr(self, 'action_serializers'):
             if self.action in self.action_serializers:
                 return self.action_serializers[self.action]
-        return super(GameViewSet, self).get_serializer_class()
+        return super(GameTeamViewSet, self).get_serializer_class()
+
+    def create(self, request):
+        """
+        Create game team request
+        """
+        serializer = GameTeamCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class GameLeaderboardView(generics.GenericAPIView):
