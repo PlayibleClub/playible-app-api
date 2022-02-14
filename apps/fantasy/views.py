@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.conf import settings
+from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.decorators import action
@@ -91,6 +93,54 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
     action_serializers = {
         'create': GameCreateSerializer,
+    }
+
+    def get_serializer_class(self):
+        if hasattr(self, 'action_serializers'):
+            if self.action in self.action_serializers:
+                return self.action_serializers[self.action]
+        return super(GameViewSet, self).get_serializer_class()
+
+    @action(detail=False, methods=['post'])
+    def test_update_scores(self, request):
+        response = requests.get('stats/json/PlayerGameStatsByDate/2017-SEP-01')
+
+        if response['status'] == settings.RESPONSE['STATUS_OK']:
+            athlete_data = utils.parse_athlete_stat_data(response['response'])
+
+            # Get active games
+            now = timezone.now()
+            games = Game.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gte=now))
+
+            for game in games:
+                game_teams = game.teams.all()
+
+                for game_team in game_teams:
+                    total_fantasy_score = 0
+                    game_assets = game_team.assets.all()
+
+                    for game_asset in game_assets:
+                        athlete = game_asset.game_athlete.athlete
+                        data = next((item for item in athlete_data if item["api_id"] == athlete.api_id), None)
+                        pass
+
+            return Response(athlete_data)
+        else:
+            content = {
+                "message": "Failed to fetch data from Stats Perform API",
+                "response": response['response']
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """Manage game teams in the database"""
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+    permission_classes = [AllowAny]
+
+    action_serializers = {
+        'create': GameTeamCreateSerializer,
     }
 
     def get_serializer_class(self):

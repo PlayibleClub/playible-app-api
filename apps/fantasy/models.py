@@ -1,4 +1,8 @@
+import datetime
+from time import time
+
 from django.db import models
+from django.utils import timezone
 
 from apps.core.models import BaseInfo
 from apps.account.models import Account, Asset
@@ -51,15 +55,20 @@ class Team(BaseInfo):
 class Game(BaseInfo):
     name = models.CharField(max_length=155)
     start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField(blank=True, null=True, default=None)
     # TODO: Decide the unit of measurement (seconds/minutes/hours/days)
     duration = models.IntegerField()
     prize = models.DecimalField(max_digits=19, decimal_places=2)
 
+    class Meta:
+        ordering = ['-created_at', '-updated_at']
+
     def __str__(self):
         return self.name
 
-    class Meta:
-        ordering = ['-created_at', '-updated_at']
+    def save(self, *args, **kwargs):
+        self.end_datetime = self.start_datetime + timezone.timedelta(minutes=int(self.duration))
+        super(Game, self).save(*args, **kwargs)
 
 
 class GameSchedule(BaseInfo):
@@ -79,7 +88,7 @@ class GameSchedule(BaseInfo):
 
 class GameTeam(BaseInfo):
     name = models.CharField(max_length=155)
-    game = models.OneToOneField("Game", on_delete=models.CASCADE)
+    game = models.ForeignKey("Game", on_delete=models.CASCADE, related_name="teams")
     account = models.OneToOneField(Account, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -91,14 +100,14 @@ class GameTeam(BaseInfo):
 
 class GameAthlete(BaseInfo):
     game = models.OneToOneField("Game", on_delete=models.CASCADE)
-    athlete = models.OneToOneField("Athlete", on_delete=models.CASCADE)
+    athlete = models.ForeignKey("Athlete", on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
 
 
 class GameAsset(BaseInfo):
-    game_team = models.OneToOneField("GameTeam", on_delete=models.CASCADE)
+    game_team = models.ForeignKey("GameTeam", on_delete=models.CASCADE, related_name="assets")
     game_athlete = models.OneToOneField(
         "GameAthlete", on_delete=models.CASCADE)
     asset = models.OneToOneField(Asset, on_delete=models.CASCADE)

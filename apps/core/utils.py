@@ -14,6 +14,19 @@ def parse_team_list_data(data):
     return teams
 
 
+def parse_athlete_stat_data(data):
+    athletes = []
+
+    for athlete in data:
+        athletes.append({
+            'api_id': athlete.get('PlayerID'),
+            "team_id": athlete.get('TeamID'),
+            "fantasy_score": athlete.get('FantasyPointsDraftKings')
+        })
+
+    return athletes
+
+
 def parse_athlete_list_data(data):
     athletes = []
     for athlete in data:

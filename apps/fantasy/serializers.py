@@ -143,6 +143,10 @@ class GameSerializer(serializers.ModelSerializer):
 
 
 class GameCreateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    start_datetime = serializers.DateTimeField()
+    duration = serializers.IntegerField()
+
     class Meta:
         model = Game
         fields = [
@@ -151,6 +155,58 @@ class GameCreateSerializer(serializers.ModelSerializer):
             'duration',
             'prize'
         ]
+
+
+class GameAthleteSerializer(serializers.Serializer):
+    athlete_id = serializers.IntegerField()
+    token_id = serializers.CharField()
+    contract_addr = serializers.CharField()
+
+
+class GameTeamCreateSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    game = serializers.IntegerField()
+    wallet_addr = serializers.CharField()
+    athletes = serializers.ListField(child=GameAthleteSerializer())
+
+    def validate(self, data):
+        game_id = data['game']
+        athletes = data['athletes']
+
+        errors = []
+        game = None
+        athlete_objs = []
+
+        # Check if game id exists
+        try:
+            game = Game.objects.get(id=game_id)
+            data['game'] = game
+        except Game.DoesNotExist:
+            errors.append('Game does not exist.')
+
+        # Check if all athletes exist in db
+        for athlete in athletes:
+            athlete_id = athlete['athlete_id']
+
+            try:
+                athlete = Athlete.objects.get(id=athlete_id)
+                athlete_objs.append(athlete)
+            except Athlete.DoesNotExist:
+                errors.append(f'Athlete {athlete_id} does not exist.')
+
+        if len(errors):
+            error_message = {'errors': errors}
+            raise serializers.ValidationError(error_message)
+
+        data['athlete_objs'] = athlete_objs
+
+        return data
+
+    def create(self, validated_data):
+        name = validated_data['name']
+        game = validated_data['game']
+        wallet_addr = validated_data['wallet_addr']
+        athlete_objs = validated_data['athlete_objs']
 
 
 class AccountLeaderboardSerializer(serializers.Serializer):
