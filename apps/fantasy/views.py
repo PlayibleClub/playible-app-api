@@ -149,7 +149,9 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                                 total_fantasy_score += data['fantasy_score']
 
                     game_team.fantasy_score += decimal.Decimal(total_fantasy_score)
-                    game_team.save()
+                    # game_team.save()
+
+                GameTeam.objects.bulk_update(game_teams, ['fantasy_score'])
 
             return Response(athlete_data)
         else:

@@ -8,7 +8,7 @@ from django.utils import timezone
 from config import celery_app
 
 from apps.fantasy import requests
-from apps.fantasy.models import Game
+from apps.fantasy.models import Game, GameTeam
 from apps.core import utils
 
 User = get_user_model()
@@ -48,7 +48,8 @@ def update_team_scores():
                             total_fantasy_score += data['fantasy_score']
 
                 game_team.fantasy_score += decimal.Decimal(total_fantasy_score)
-                game_team.save()
+                # game_team.save()
+            GameTeam.objects.bulk_update(game_teams, ['fantasy_score'])
 
         return len(games)
     else:
