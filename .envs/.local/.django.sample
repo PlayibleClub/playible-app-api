@@ -11,7 +11,7 @@ REDIS_URL=redis://redis:6379/0
 
 # Flower
 CELERY_FLOWER_USER=oruUoaXHUAidbQzKGfPGsUYvsVQXTcit
-CELERY_FLOWER_PASSWORD=e2SkJZ7JOVeYxriIfW0n4xXFiraj3fpL0pic37gfvHgl7wV54sUUHeOqcnDm2ajN
+CELERY_FLOWER_PASSWORD=e2SkJZ7JOVeYxriIfW0n4xXFiraj3fpL0pic37gfvHgl7wV54sUUHeOqcnDm2ajNs
 
 # Swagger
 # ------------------------------------------------------------------------------
