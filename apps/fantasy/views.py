@@ -223,3 +223,12 @@ class GameLeaderboardView(generics.GenericAPIView):
             return Response(content, status=status.HTTP_200_OK)
         except:
             return Response("An error has occured", status=status.HTTP_400_BAD_REQUEST)
+
+
+class PackAddressViewSet(viewsets.ModelViewSet):
+    """
+    Pack Adddress API
+    """
+    serializer_class = PackAddressDetailSerializer
+    queryset = PackAddress.objects.all()
+    permission_classes = [AllowAny]

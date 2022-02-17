@@ -268,3 +268,9 @@ class GameLeaderboardSerializer(serializers.Serializer):
 
 class BlankSerializer(serializers.Serializer):
     pass
+
+
+class PackAddressDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PackAddress
+        fields = ['release', 'open_pack_addr', 'token_addr']

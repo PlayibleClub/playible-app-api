@@ -37,6 +37,7 @@ admin.site.register(fantasy.GameSchedule)
 admin.site.register(fantasy.GameAthlete)
 admin.site.register(fantasy.GameAsset)
 admin.site.register(fantasy.GameAthleteStat)
+admin.site.register(fantasy.PackAddress)
 admin.site.register(user.User, UserAdmin)
 
 

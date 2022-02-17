@@ -27,6 +27,12 @@ class Athlete(BaseInfo):
         ordering = ['-created_at', '-updated_at']
 
 
+class PackAddress(BaseInfo):
+    release = models.CharField(max_length=155)
+    open_pack_addr = models.CharField(max_length=155)
+    token_addr = models.CharField(max_length=155)
+
+
 class StatsInfo(BaseInfo):
     name = models.CharField(max_length=155)
     key = models.CharField(max_length=155, unique=True)
