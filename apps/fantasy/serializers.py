@@ -142,6 +142,7 @@ class GameSerializer(serializers.ModelSerializer):
             'name',
             'start_datetime',
             'end_datetime',
+            'prize',
             'image'
         ]
 
