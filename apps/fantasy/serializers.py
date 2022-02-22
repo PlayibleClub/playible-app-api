@@ -140,6 +140,9 @@ class GameSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'start_datetime',
+            'end_datetime',
+            'image'
         ]
 
 
@@ -154,7 +157,8 @@ class GameCreateSerializer(serializers.ModelSerializer):
             'name',
             'start_datetime',
             'duration',
-            'prize'
+            'prize',
+            'image'
         ]
 
 

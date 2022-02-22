@@ -89,7 +89,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     permission_classes = [AllowAny]
 
 
-class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Manage games in the database"""
     queryset = Game.objects.all()
     serializer_class = GameSerializer
@@ -98,8 +98,10 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
     action_serializers = {
         'create': GameCreateSerializer,
+        'update': GameCreateSerializer,
         'test_update_scores': None,
-        'leaderboard': GameTeamDetailSerializer
+        'leaderboard': GameTeamDetailSerializer,
+        'active': GameSerializer
     }
 
     def get_serializer_class(self):
@@ -115,6 +117,27 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
         game_teams = game.teams.order_by('-fantasy_score')
 
         return game_teams
+
+    @paginate
+    @action(detail=False)
+    def new(self, request):
+        now = timezone.now()
+        games = Game.objects.filter(Q(start_datetime__gt=now))
+        return games
+
+    @paginate
+    @action(detail=False)
+    def completed(self, request):
+        now = timezone.now()
+        games = Game.objects.filter(Q(end_datetime__lt=now))
+        return games
+
+    @paginate
+    @action(detail=False)
+    def active(self, request):
+        now = timezone.now()
+        games = Game.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gt=now))
+        return games
 
     @action(detail=False, methods=['post'])
     def test_update_scores(self, request):

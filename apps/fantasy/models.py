@@ -65,6 +65,7 @@ class Game(BaseInfo):
     # TODO: Decide the unit of measurement (seconds/minutes/hours/days)
     duration = models.IntegerField()
     prize = models.DecimalField(max_digits=19, decimal_places=2)
+    image = models.ImageField(upload_to='games', null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
