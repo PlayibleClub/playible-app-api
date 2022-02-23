@@ -1,12 +1,19 @@
+from datetime import datetime, timedelta
+
 from django.shortcuts import render
+from django.db.models import Q
+from django.conf import settings
+
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
+from apps.fantasy import requests
 from apps.account import models, serializers
 from apps.core import utils, terra
+from apps.fantasy.models import Athlete, GameSchedule
 
 # TODO: Define permissions for create and update actions
 
@@ -148,6 +155,72 @@ class AccountAssetView(generics.GenericAPIView):
         #queryset = models.UserAddress.objects.filter(user=user)
         #serializer = serializers.UserAddressSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AthleteTokenView(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, {"all_tokens_info": {"owner": wallet}})
+
+        try:
+            tokens = response
+
+            for token in tokens:
+                if "fantasy_score" not in token:
+                    token['fantasy_score'] = 0
+
+            now = datetime.now()  # TODO: CHANGE TO THIS
+            # now = datetime(2022, 3, 31, 0, 0)
+
+            start_date = now - timedelta(days=now.weekday())
+            end_date = start_date + timedelta(days=6)
+
+            # Get distinct game schedule dates within the date range
+            game_schedules = GameSchedule.objects.filter(
+                Q(datetime__date__gte=start_date) & Q(datetime__date__lte=end_date)).order_by('datetime').values('datetime').distinct()
+
+            # print('game schedules')
+            # print(game_schedules[0]['datetime'])
+            # print(game_schedules[0]['datetime'].strftime('%Y'))
+            # game_schedules = [{'datetime': datetime(2017, 9, 1, 0, 0)}]
+
+            for game_schedule in game_schedules:
+                # Query fantasy api for player stats on this schedule
+                cur_date = game_schedule['datetime'].strftime('%Y-%b-%d').upper()
+                url = 'stats/json/PlayerGameStatsByDate/' + cur_date
+
+                response = requests.get(url)
+
+                if response['status'] == settings.RESPONSE['STATUS_OK']:
+                    athlete_data = utils.parse_athlete_stat_data(response['response'])
+
+                    for token in tokens:
+                        # Retrieve fantasy score for each token based on game sched
+                        athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                        athlete = Athlete.objects.filter(pk=athlete_id).first()
+
+                        if athlete:
+                            # Search athlete if it has a stat data
+                            data = next((item for item in athlete_data if item["api_id"] == athlete.api_id), None)
+
+                            if data:
+                                token['fantasy_score'] += data['fantasy_score']
+                else:
+                    print('FAIL FETCH DATA')
+
+            return Response(tokens, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class EmailViewset(viewsets.GenericViewSet,

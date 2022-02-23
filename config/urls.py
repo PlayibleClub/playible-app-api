@@ -50,7 +50,7 @@ urlpatterns = [
     path("account/", include('apps.account.urls')),
 
     # custom urls
-    path('account/assets/account/<str:wallet>/collection/<str:contract>', account_views.AccountAssetView.as_view()),
+    # path('account/assets/account/<str:wallet>/collection/<str:contract>', account_views.AccountAssetView.as_view()),
     # path('fantasy/game/<int:pk>/leaderboard', fantasy_views.GameLeaderboardView.as_view()),
 
     # auth

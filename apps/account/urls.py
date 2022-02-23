@@ -14,4 +14,5 @@ router.register(r'emails', EmailViewset)
 
 urlpatterns = [
     url(r'', include(router.urls)),
+    path('athlete_tokens/<str:wallet>/collection/<str:contract>', AthleteTokenView.as_view()),
 ]
