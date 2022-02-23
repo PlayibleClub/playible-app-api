@@ -50,6 +50,53 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
+class GameScheduleView(generics.GenericAPIView):
+    """Retrieves game schedule for the current year and saves it in database"""
+    queryset = Game.objects.all()
+    serializer_class = GameLeaderboardSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, pk=None):
+        now = timezone.now()
+        season = now.strftime('%Y').upper()
+        response = requests.get('scores/json/Games/' + season)
+
+        if response['status'] == settings.RESPONSE['STATUS_OK']:
+            data = response['response']
+
+            game_schedules = []
+
+            for schedule in data:
+                team1 = None
+                team2 = None
+
+                try:
+                    team1 = Team.objects.get(api_id=schedule.get('AwayTeamID'))
+                    team2 = Team.objects.get(api_id=schedule.get('HomeTeamID'))
+                except Team.DoesNotExist:
+                    pass
+
+                game_schedule = GameSchedule(
+                    game_api_id=schedule.get('GameID'),
+                    datetime=schedule.get('Day'),
+                    team1=team1,
+                    team2=team2
+                )
+
+                game_schedules.append(game_schedule)
+
+            GameSchedule.objects.bulk_create(game_schedules)
+
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            content = {
+                "message": "Failed to fetch data from Stats Perform API",
+                "response": response['response']
+            }
+
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
 class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Manage athletes in the database"""
     queryset = Athlete.objects.all()

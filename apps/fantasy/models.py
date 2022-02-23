@@ -79,15 +79,15 @@ class Game(BaseInfo):
 
 
 class GameSchedule(BaseInfo):
-    game = models.OneToOneField("Game", on_delete=models.CASCADE)
+    game_api_id = models.IntegerField(unique=True, blank=True, default=None)
     datetime = models.DateTimeField()
-    team1 = models.OneToOneField(
-        "Team", on_delete=models.CASCADE, related_name="GameSchedule_team1")
-    team2 = models.OneToOneField(
-        "Team", on_delete=models.CASCADE, related_name="GameSchedule_team2")
+    team1 = models.ForeignKey(
+        "Team", on_delete=models.CASCADE, related_name="schedule_team1")
+    team2 = models.ForeignKey(
+        "Team", on_delete=models.CASCADE, related_name="schedule_team2")
 
     def __str__(self):
-        return self.game.name + ' ' + self.datetime
+        return str(self.game_api_id)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']
@@ -125,11 +125,10 @@ class GameAsset(BaseInfo):
 
 
 class GameAthleteStat(BaseInfo):
-    game_athlete = models.OneToOneField(
-        "GameAthlete", on_delete=models.CASCADE, related_name="stat")
-    game_schedule = models.OneToOneField(
-        "GameSchedule", on_delete=models.CASCADE, null=True, blank=True)
+    game_schedule = models.ForeignKey("GameSchedule", on_delete=models.CASCADE, default=None)
+    athlete = models.ForeignKey("Athlete", on_delete=models.CASCADE, default=None)
     fantasy_score = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    singles = models.DecimalField(max_digits=19, decimal_places=2, default=0)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']

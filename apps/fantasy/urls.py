@@ -15,4 +15,5 @@ router.register(r'pack_address', PackAddressViewSet)
 
 urlpatterns = [
     url(r'', include(router.urls)),
+    path('game_schedule_populate/', GameScheduleView.as_view(), name='game_schedule_populate'),
 ]
