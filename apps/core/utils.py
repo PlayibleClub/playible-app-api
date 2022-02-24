@@ -54,6 +54,7 @@ def parse_athlete_stat_data(data):
             "walks": athlete.get('Walks'),
             "hit_by_pitch": athlete.get('HitByPitch'),
             "stolen_bases": athlete.get('StolenBases'),
+            "position": athlete.get('PositionCategory'),
         })
 
     return athletes

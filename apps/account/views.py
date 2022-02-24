@@ -217,6 +217,7 @@ class AthleteTokenView(generics.GenericAPIView):
                             token['walks'] += data['walks']
                             token['hit_by_pitch'] += data['hit_by_pitch']
                             token['stolen_bases'] += data['stolen_bases']
+                            token['position'] = data['position']
             else:
                 print('FAIL FETCH DATA')
 
