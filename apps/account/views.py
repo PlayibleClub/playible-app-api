@@ -191,7 +191,6 @@ class AthleteTokenView(generics.GenericAPIView):
             now = timezone.now()
 
             season = now.strftime('%Y').upper()
-            season = '2021'
             url = 'stats/json/PlayerSeasonStats/' + season
 
             response = requests.get(url)
