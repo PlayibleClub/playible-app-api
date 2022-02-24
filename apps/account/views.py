@@ -187,6 +187,7 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['walks'] = 0
                     token['hit_by_pitch'] = 0
                     token['stolen_bases'] = 0
+                    token['position'] = None
 
             now = timezone.now()
 
