@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.db.models import Q
 from django.conf import settings
+from django.utils import timezone
 
 from rest_framework import status, generics, viewsets, mixins
 from rest_framework.response import Response
@@ -178,10 +179,108 @@ class AthleteTokenView(generics.GenericAPIView):
             for token in tokens:
                 if "fantasy_score" not in token:
                     token['fantasy_score'] = 0
+                    token['singles'] = 0
+                    token['doubles'] = 0
+                    token['triples'] = 0
+                    token['home_runs'] = 0
+                    token['runs_batted_in'] = 0
+                    token['walks'] = 0
+                    token['hit_by_pitch'] = 0
+                    token['stolen_bases'] = 0
+
+            now = timezone.now()
+
+            season = now.strftime('%Y').upper()
+            season = '2021'
+            url = 'stats/json/PlayerSeasonStats/' + season
+
+            response = requests.get(url)
+
+            if response['status'] == settings.RESPONSE['STATUS_OK']:
+                athlete_data = utils.parse_athlete_stat_data(response['response'])
+
+                for token in tokens:
+                    # Retrieve fantasy score for each token based on game sched
+                    athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                    athlete = Athlete.objects.filter(pk=athlete_id).first()
+
+                    if athlete:
+                        # Search athlete if it has a stat data
+                        data = next((item for item in athlete_data if item["api_id"] == athlete.api_id), None)
+
+                        if data:
+                            token['fantasy_score'] += data['fantasy_score']
+                            token['singles'] += data['singles']
+                            token['doubles'] += data['doubles']
+                            token['triples'] += data['triples']
+                            token['home_runs'] += data['home_runs']
+                            token['runs_batted_in'] += data['runs_batted_in']
+                            token['walks'] += data['walks']
+                            token['hit_by_pitch'] += data['hit_by_pitch']
+                            token['stolen_bases'] += data['stolen_bases']
+            else:
+                print('FAIL FETCH DATA')
+
+            return Response(tokens, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class AccountAssetView(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, {"tokens": {"owner": wallet}})
+        assets = models.Asset.objects.none()
+        for token in response['tokens']:
+            asset, is_created = models.Asset.objects.get_or_create(
+                token_id=token,
+                owner=account,
+                collection=collection,
+            )
+            assets = assets.union(models.Asset.objects.filter(pk=asset.pk))
+        serializer = self.serializer_class(assets, many=True)
+        #user = User.objects.get(username=request.user)
+        #queryset = models.UserAddress.objects.filter(user=user)
+        #serializer = serializers.UserAddressSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AthleteTokenView2(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, {"all_tokens_info": {"owner": wallet}})
+
+        try:
+            tokens = response
+
+            for token in tokens:
+                if "fantasy_score" not in token:
+                    token['fantasy_score'] = 0
 
             now = datetime.now()  # TODO: CHANGE TO THIS
             # now = datetime(2022, 3, 31, 0, 0)
 
+            # This date range gets the monday of this week until Sunday
             start_date = now - timedelta(days=now.weekday())
             end_date = start_date + timedelta(days=6)
 

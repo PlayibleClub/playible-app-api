@@ -45,7 +45,15 @@ def parse_athlete_stat_data(data):
         athletes.append({
             'api_id': athlete.get('PlayerID'),
             "team_id": athlete.get('TeamID'),
-            "fantasy_score": athlete.get('FantasyPointsDraftKings')
+            "fantasy_score": athlete.get('FantasyPointsDraftKings'),
+            "singles": athlete.get('Singles'),
+            "doubles": athlete.get('Doubles'),
+            "triples": athlete.get('Triples'),
+            "home_runs": athlete.get('HomeRuns'),
+            "runs_batted_in": athlete.get('RunsBattedIn'),
+            "walks": athlete.get('Walks'),
+            "hit_by_pitch": athlete.get('HitByPitch'),
+            "stolen_bases": athlete.get('StolenBases'),
         })
 
     return athletes
