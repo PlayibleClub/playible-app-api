@@ -134,6 +134,43 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
     queryset = Athlete.objects.all()
     serializer_class = AthleteSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'id'
+
+    action_serializers = {
+        'top_performers': AthleteStatDetailSerializer,
+    }
+
+    def get_serializer_class(self):
+        if hasattr(self, 'action_serializers'):
+            if self.action in self.action_serializers:
+                return self.action_serializers[self.action]
+        return super(AthleteViewSet, self).get_serializer_class()
+
+    @paginate
+    @action(detail=False)
+    def top_performers(self, request):
+        now = timezone.now()
+        season = now.strftime('%Y').upper()
+        # season = '2021'
+
+        athlete_stats = GameAthleteStat.objects.filter(Q(season=season)).order_by('-fantasy_score')
+
+        return athlete_stats
+
+    @action(detail=True)
+    def stats(self, request, id=None):
+        now = timezone.now()
+        season = now.strftime('%Y').upper()
+        # season = '2021'
+
+        athlete = self.get_object()
+        athlete_stat = GameAthleteStat.objects.filter(Q(season=season) & Q(athlete=athlete)).first()
+        serialized_athlete_stat = AthleteStatDetailSerializer(athlete_stat).data
+
+        if athlete_stat is None:
+            serialized_athlete_stat['athlete'] = AthleteGameStatDetailSerializer(athlete).data
+
+        return Response({"athlete_stat": serialized_athlete_stat})
 
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):

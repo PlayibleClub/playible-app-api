@@ -8,7 +8,7 @@ from django.utils import timezone
 from config import celery_app
 
 from apps.fantasy import requests
-from apps.fantasy.models import Game, GameTeam
+from apps.fantasy.models import Athlete, Game, GameAthleteStat, GameTeam
 from apps.core import utils
 
 User = get_user_model()
@@ -59,3 +59,67 @@ def update_team_scores():
         }
 
         return content
+
+
+@celery_app.task()
+def update_athlete_stats():
+    """Task for updating all athlete stats on the current season"""
+
+    now = timezone.now()
+
+    season = now.strftime('%Y').upper()
+    # season = '2021'
+    url = 'stats/json/PlayerSeasonStats/' + season
+
+    response = requests.get(url)
+
+    if response['status'] == settings.RESPONSE['STATUS_OK']:
+        athlete_data = utils.parse_athlete_stat_data(response['response'])
+
+        new_athlete_stats = []
+        existing_athlete_stats = []
+
+        for athlete in athlete_data:
+            athlete_obj = Athlete.objects.filter(api_id=athlete.get('api_id')).first()
+
+            if athlete_obj:
+                athlete_stat_obj = GameAthleteStat.objects.filter(Q(athlete=athlete_obj) & Q(season=season)).first()
+
+                if athlete_stat_obj is None:
+                    athlete_stat_obj = GameAthleteStat(
+                        season=season,
+                        athlete=athlete_obj,
+                        fantasy_score=athlete.get('fantasy_score'),
+                        singles=athlete.get('singles'),
+                        doubles=athlete.get('doubles'),
+                        triples=athlete.get('triples'),
+                        home_runs=athlete.get('home_runs'),
+                        runs_batted_in=athlete.get('runs_batted_in'),
+                        walks=athlete.get('walks'),
+                        hit_by_pitch=athlete.get('hit_by_pitch'),
+                        stolen_bases=athlete.get('stolen_bases'),
+                        position=athlete.get('position'),
+                    )
+
+                    new_athlete_stats.append(athlete_stat_obj)
+                else:
+                    athlete_stat_obj.fantasy_score = athlete.get('fantasy_score')
+                    athlete_stat_obj.singles = athlete.get('singles')
+                    athlete_stat_obj.doubles = athlete.get('doubles')
+                    athlete_stat_obj.triples = athlete.get('triples')
+                    athlete_stat_obj.home_runs = athlete.get('home_runs')
+                    athlete_stat_obj.runs_batted_in = athlete.get('runs_batted_in')
+                    athlete_stat_obj.walks = athlete.get('walks')
+                    athlete_stat_obj.hit_by_pitch = athlete.get('hit_by_pitch')
+                    athlete_stat_obj.stolen_bases = athlete.get('stolen_bases')
+                    athlete_stat_obj.position = athlete.get('position')
+
+                    existing_athlete_stats.append(athlete_stat_obj)
+
+        GameAthleteStat.objects.bulk_create(new_athlete_stats)
+        GameAthleteStat.objects.bulk_update(
+            existing_athlete_stats,
+            ['fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
+                'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position'],
+            20
+        )

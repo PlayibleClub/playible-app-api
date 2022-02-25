@@ -125,10 +125,18 @@ class GameAsset(BaseInfo):
 
 
 class GameAthleteStat(BaseInfo):
-    game_schedule = models.ForeignKey("GameSchedule", on_delete=models.CASCADE, default=None)
+    season = models.CharField(max_length=155)
     athlete = models.ForeignKey("Athlete", on_delete=models.CASCADE, default=None)
     fantasy_score = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     singles = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    doubles = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    triples = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    home_runs = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    runs_batted_in = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    walks = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    hit_by_pitch = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    stolen_bases = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    position = models.CharField(max_length=155)
 
     class Meta:
         ordering = ['-created_at', '-updated_at']

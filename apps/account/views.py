@@ -14,7 +14,7 @@ from drf_yasg.utils import swagger_auto_schema
 from apps.fantasy import requests
 from apps.account import models, serializers
 from apps.core import utils, terra
-from apps.fantasy.models import Athlete, GameSchedule
+from apps.fantasy.models import Athlete, GameAthleteStat, GameSchedule
 
 # TODO: Define permissions for create and update actions
 
@@ -190,6 +190,66 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['position'] = None
 
             now = timezone.now()
+            season = now.strftime('%Y').upper()
+
+            for token in tokens:
+                # Retrieve fantasy score for each token based on game sched
+                athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                athlete = Athlete.objects.filter(pk=athlete_id).first()
+
+                if athlete:
+                    # Search athlete if it has a stat data
+                    athlete_stat = GameAthleteStat.objects.filter(Q(athlete=athlete) & Q(season=season)).first()
+
+                    if athlete_stat:
+                        token['fantasy_score'] += athlete_stat.fantasy_score
+                        token['singles'] += athlete_stat.singles
+                        token['doubles'] += athlete_stat.doubles
+                        token['triples'] += athlete_stat.triples
+                        token['home_runs'] += athlete_stat.home_runs
+                        token['runs_batted_in'] += athlete_stat.runs_batted_in
+                        token['walks'] += athlete_stat.walks
+                        token['hit_by_pitch'] += athlete_stat.hit_by_pitch
+                        token['stolen_bases'] += athlete_stat.stolen_bases
+                        token['position'] = athlete_stat.position
+
+            return Response(tokens, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class AthleteTokenView2(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, {"all_tokens_info": {"owner": wallet}})
+
+        try:
+            tokens = response
+
+            for token in tokens:
+                if "fantasy_score" not in token:
+                    token['fantasy_score'] = 0
+                    token['singles'] = 0
+                    token['doubles'] = 0
+                    token['triples'] = 0
+                    token['home_runs'] = 0
+                    token['runs_batted_in'] = 0
+                    token['walks'] = 0
+                    token['hit_by_pitch'] = 0
+                    token['stolen_bases'] = 0
+                    token['position'] = None
+
+            now = timezone.now()
 
             season = now.strftime('%Y').upper()
             url = 'stats/json/PlayerSeasonStats/' + season
@@ -227,36 +287,7 @@ class AthleteTokenView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class AccountAssetView(generics.GenericAPIView):
-    queryset = models.Asset.objects.all()
-    permission_classes = [AllowAny]
-    serializer_class = serializers.AssetSerializer
-
-    def get(self, request, wallet=None, contract=None):
-        account, is_created = models.Account.objects.get_or_create(
-            wallet_addr=wallet
-        )
-        collection, is_created = models.Collection.objects.get_or_create(
-            contract_addr=contract
-        )
-
-        response = terra.query_contract(contract, {"tokens": {"owner": wallet}})
-        assets = models.Asset.objects.none()
-        for token in response['tokens']:
-            asset, is_created = models.Asset.objects.get_or_create(
-                token_id=token,
-                owner=account,
-                collection=collection,
-            )
-            assets = assets.union(models.Asset.objects.filter(pk=asset.pk))
-        serializer = self.serializer_class(assets, many=True)
-        #user = User.objects.get(username=request.user)
-        #queryset = models.UserAddress.objects.filter(user=user)
-        #serializer = serializers.UserAddressSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class AthleteTokenView2(generics.GenericAPIView):
+class AthleteTokenView3(generics.GenericAPIView):
     queryset = models.Asset.objects.all()
     permission_classes = [AllowAny]
     serializer_class = serializers.AssetSerializer
@@ -321,6 +352,35 @@ class AthleteTokenView2(generics.GenericAPIView):
             return Response(tokens, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class AccountAssetView(generics.GenericAPIView):
+    queryset = models.Asset.objects.all()
+    permission_classes = [AllowAny]
+    serializer_class = serializers.AssetSerializer
+
+    def get(self, request, wallet=None, contract=None):
+        account, is_created = models.Account.objects.get_or_create(
+            wallet_addr=wallet
+        )
+        collection, is_created = models.Collection.objects.get_or_create(
+            contract_addr=contract
+        )
+
+        response = terra.query_contract(contract, {"tokens": {"owner": wallet}})
+        assets = models.Asset.objects.none()
+        for token in response['tokens']:
+            asset, is_created = models.Asset.objects.get_or_create(
+                token_id=token,
+                owner=account,
+                collection=collection,
+            )
+            assets = assets.union(models.Asset.objects.filter(pk=asset.pk))
+        serializer = self.serializer_class(assets, many=True)
+        #user = User.objects.get(username=request.user)
+        #queryset = models.UserAddress.objects.filter(user=user)
+        #serializer = serializers.UserAddressSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class EmailViewset(viewsets.GenericViewSet,

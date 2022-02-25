@@ -279,3 +279,23 @@ class PackAddressDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = PackAddress
         fields = ['release', 'open_pack_addr', 'token_addr']
+
+
+class AthleteGameStatDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Athlete
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'api_id',
+        ]
+
+
+class AthleteStatDetailSerializer(serializers.ModelSerializer):
+    athlete = AthleteGameStatDetailSerializer(read_only=True)
+
+    class Meta:
+        model = GameAthleteStat
+        fields = ['athlete', 'fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
+                  'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position']
