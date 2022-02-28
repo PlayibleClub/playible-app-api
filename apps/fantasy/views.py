@@ -184,7 +184,8 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
         'create': GameCreateSerializer,
         'update': GameCreateSerializer,
         'test_update_scores': None,
-        'leaderboard': GameTeamDetailSerializer,
+        'leaderboard': GameTeamLeaderboardSerializer,
+        'registered_teams': GameTeamListDetailSerializer,
         'active': GameSerializer
     }
 
@@ -222,6 +223,21 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
         now = timezone.now()
         games = Game.objects.filter(Q(start_datetime__lte=now) & Q(end_datetime__gt=now))
         return games
+
+    @paginate
+    @action(detail=True)
+    def registered_teams(self, request, id=None):
+        game = self.get_object()
+        wallet_addr = self.request.query_params.get('wallet_addr', None)
+        teams = GameTeam.objects.none()
+
+        if wallet_addr is not None:
+            account = Account.objects.filter(Q(wallet_addr=wallet_addr)).first()
+
+            if account:
+                teams = GameTeam.objects.filter(Q(account=account) & Q(game=game))
+
+        return teams
 
     @action(detail=False, methods=['post'])
     def test_update_scores(self, request):
@@ -271,9 +287,10 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
 class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
     """Manage game teams in the database"""
-    queryset = Game.objects.all()
-    serializer_class = GameSerializer
+    queryset = GameTeam.objects.all()
+    serializer_class = GameTeamCreateSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'id'
 
     action_serializers = {
         'create': GameTeamCreateSerializer,
@@ -294,6 +311,42 @@ class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.C
         serializer.save()
 
         return Response(status=status.HTTP_201_CREATED)
+
+    def retrieve(self, request, id=None):
+        team = self.get_object()
+        assets = team.assets.all()
+
+        athletes = []
+
+        data = {
+            'name': team.name,
+            'fantasy_score': team.fantasy_score,
+        }
+
+        for asset in assets:
+            athlete = asset.game_athlete.athlete
+
+            now = timezone.now()
+            season = now.strftime('%Y').upper()
+
+            athlete_stat = GameAthleteStat.objects.filter(Q(athlete=athlete) & Q(season=season)).first()
+            fantasy_score = 0
+
+            if athlete_stat:
+                fantasy_score = athlete_stat.fantasy_score
+
+            athlete_obj = {
+                'id': athlete.id,
+                'first_name': athlete.first_name,
+                'last_name': athlete.last_name,
+                'fantasy_score': fantasy_score
+            }
+
+            athletes.append(athlete_obj)
+
+        data['athletes'] = athletes
+
+        return Response(data)
 
 
 class GameLeaderboardView(generics.GenericAPIView):

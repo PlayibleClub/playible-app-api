@@ -169,7 +169,13 @@ class GameAthleteSerializer(serializers.Serializer):
     contract_addr = serializers.CharField()
 
 
-class GameTeamDetailSerializer(serializers.ModelSerializer):
+class GameTeamListDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameTeam
+        fields = ['id', 'name', 'fantasy_score', 'created_at']
+
+
+class GameTeamLeaderboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameTeam
         fields = [
