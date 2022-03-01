@@ -194,7 +194,8 @@ class AthleteTokenView(generics.GenericAPIView):
 
             for token in tokens:
                 # Retrieve fantasy score for each token based on game sched
-                athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                # +1 id since smart contract id starts with 0
+                athlete_id = int(token['token_info']['info']['extension']['athlete_id']) + 1
                 athlete = Athlete.objects.filter(pk=athlete_id).first()
 
                 if athlete:
