@@ -171,7 +171,15 @@ class AthleteTokenView(generics.GenericAPIView):
             contract_addr=contract
         )
 
-        response = terra.query_contract(contract, {"all_tokens_info": {"owner": wallet}})
+        limit = self.request.query_params.get('limit', None)
+        start_after = self.request.query_params.get('start_after', None)
+
+        msg = {"all_tokens_info": {"owner": wallet, "limit": limit}}
+
+        if start_after:
+            msg['all_tokens_info']['start_after'] = start_after
+
+        response = terra.query_contract(contract, msg)
 
         try:
             tokens = response
