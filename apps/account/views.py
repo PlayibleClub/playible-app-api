@@ -174,15 +174,22 @@ class AthleteTokenView(generics.GenericAPIView):
         limit = self.request.query_params.get('limit', None)
         start_after = self.request.query_params.get('start_after', None)
 
-        msg = {"all_tokens_info": {"owner": wallet, "limit": int(limit)}}
+        msg = {"all_tokens_info": {"owner": wallet}}
+        total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
+
+        if limit:
+            msg['all_tokens_info']['limit'] = limit
 
         if start_after:
             msg['all_tokens_info']['start_after'] = start_after
 
         response = terra.query_contract(contract, msg)
+        total_tokens = terra.query_contract(contract, total_tokens_msg)
 
         try:
             tokens = response
+            print('total tokens')
+            print(total_tokens)
 
             for token in tokens:
                 if "fantasy_score" not in token:
@@ -222,7 +229,7 @@ class AthleteTokenView(generics.GenericAPIView):
                         token['stolen_bases'] += athlete_stat.stolen_bases
                         token['position'] = athlete_stat.position
 
-            return Response(tokens, status=status.HTTP_200_OK)
+            return Response({"total_count": total_tokens, "tokens": tokens}, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
