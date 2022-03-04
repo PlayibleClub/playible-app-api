@@ -42,6 +42,12 @@ class TeamSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
         list_serializer_class = TeamListSerializer
 
+
+class TeamDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = ['id',  'name', 'api_id']
+
 # Serializer for Stats Perform API data
 
 
@@ -118,6 +124,8 @@ class AthleteAPISerializer(serializers.ModelSerializer):
 
 
 class AthleteSerializer(serializers.ModelSerializer):
+    team = TeamDetailSerializer(read_only=True)
+
     class Meta:
         model = Athlete
         fields = [
