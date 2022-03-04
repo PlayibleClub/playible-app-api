@@ -131,7 +131,7 @@ class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """Manage athletes in the database"""
-    queryset = Athlete.objects.all()
+    queryset = Athlete.objects.all().order_by('pk')
     serializer_class = AthleteSerializer
     permission_classes = [AllowAny]
     lookup_field = 'id'
