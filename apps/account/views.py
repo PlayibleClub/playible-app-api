@@ -178,7 +178,7 @@ class AthleteTokenView(generics.GenericAPIView):
         total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
 
         if limit:
-            msg['all_tokens_info']['limit'] = limit
+            msg['all_tokens_info']['limit'] = int(limit)
 
         if start_after:
             msg['all_tokens_info']['start_after'] = start_after
@@ -188,8 +188,6 @@ class AthleteTokenView(generics.GenericAPIView):
 
         try:
             tokens = response
-            print('total tokens')
-            print(total_tokens)
 
             for token in tokens:
                 if "fantasy_score" not in token:
