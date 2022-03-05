@@ -126,3 +126,5 @@ def update_athlete_stats():
                 'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position'],
             20
         )
+
+        return(len(new_athlete_stats) + len(existing_athlete_stats))
