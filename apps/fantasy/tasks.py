@@ -119,12 +119,14 @@ def update_athlete_stats():
 
                     existing_athlete_stats.append(athlete_stat_obj)
 
-        GameAthleteStat.objects.bulk_create(new_athlete_stats)
-        GameAthleteStat.objects.bulk_update(
-            existing_athlete_stats,
-            ['fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
-                'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position'],
-            20
-        )
+        if len(new_athlete_stats) > 0:
+            GameAthleteStat.objects.bulk_create(new_athlete_stats)
+        if len(existing_athlete_stats) > 0:
+            GameAthleteStat.objects.bulk_update(
+                existing_athlete_stats,
+                ['fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
+                    'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position'],
+                20
+            )
 
         return(len(new_athlete_stats) + len(existing_athlete_stats))
