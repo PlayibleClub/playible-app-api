@@ -177,14 +177,18 @@ class AthleteTokenView(generics.GenericAPIView):
         msg = {"all_tokens_info": {"owner": wallet}}
         total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
 
-        if limit:
-            msg['all_tokens_info']['limit'] = int(limit)
-
         if start_after:
             msg['all_tokens_info']['start_after'] = start_after
 
-        response = terra.query_contract(contract, msg)
         total_tokens = terra.query_contract(contract, total_tokens_msg)
+
+        if limit:
+            msg['all_tokens_info']['limit'] = int(limit)
+        else:
+            if total_tokens:
+                msg['all_tokens_info']['limit'] = total_tokens
+
+        response = terra.query_contract(contract, msg)
 
         try:
             tokens = response
