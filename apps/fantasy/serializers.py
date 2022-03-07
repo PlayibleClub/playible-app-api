@@ -183,12 +183,21 @@ class GameTeamListDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'fantasy_score', 'created_at']
 
 
+class GameTeamAccountLeaderboardDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['wallet_addr']
+
+
 class GameTeamLeaderboardSerializer(serializers.ModelSerializer):
+    account = GameTeamAccountLeaderboardDetailSerializer(read_only=True)
+
     class Meta:
         model = GameTeam
         fields = [
             'name',
             'fantasy_score',
+            'account'
         ]
 
 
