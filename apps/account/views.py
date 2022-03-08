@@ -177,8 +177,8 @@ class AthleteTokenView(generics.GenericAPIView):
         msg = {"all_tokens_info": {"owner": wallet}}
         # total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
 
-        if start_after:
-            msg['all_tokens_info']['start_after'] = start_after
+        # if start_after:
+        #     msg['all_tokens_info']['start_after'] = start_after
 
         # total_tokens = terra.query_contract(contract, total_tokens_msg)
 
