@@ -174,7 +174,7 @@ class AthleteTokenView(generics.GenericAPIView):
         limit = self.request.query_params.get('limit', None)
         start_after = self.request.query_params.get('start_after', None)
 
-        msg = {"all_tokens_info": {"owner": wallet}}
+        msg = {"owner_tokens_info": {"owner": wallet}}
         # total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
 
         # if start_after:
