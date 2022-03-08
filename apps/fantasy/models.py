@@ -19,6 +19,11 @@ class Athlete(BaseInfo):
     salary = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     is_injured = models.BooleanField(default=False, blank=True)
+    nft_image = models.FileField(
+        upload_to='athlete/images/',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name

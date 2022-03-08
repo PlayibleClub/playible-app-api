@@ -16,6 +16,8 @@ class TeamListSerializer(serializers.ListSerializer):
                 defaults={
                     'location': team_data['location'],
                     'name': team_data['name'],
+                    'primary_color': team_data['primary_color'],
+                    'secondary_color': team_data['secondary_color']
                 }
             )
             teams_list.append({
@@ -31,6 +33,8 @@ class TeamListSerializer(serializers.ListSerializer):
 class TeamSerializer(serializers.ModelSerializer):
     location = serializers.CharField(required=False, allow_null=True)
     name = serializers.CharField(required=False, allow_null=True)
+    primary_color = serializers.CharField(required=False, allow_null=True)
+    secondary_color = serializers.CharField(required=False, allow_null=True)
     api_id = serializers.IntegerField(
         required=False,
         allow_null=True
@@ -38,7 +42,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ['id', 'location', 'name', 'api_id']
+        fields = ['id', 'location', 'name', 'api_id', 'primary_color', 'secondary_color']
         read_only_fields = ['id']
         list_serializer_class = TeamListSerializer
 
@@ -139,6 +143,7 @@ class AthleteSerializer(serializers.ModelSerializer):
             'jersey',
             'is_active',
             'is_injured',
+            'nft_image'
         ]
 
 

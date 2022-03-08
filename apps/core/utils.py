@@ -33,7 +33,9 @@ def parse_team_list_data(data):
         teams.append({
             "location": team.get('City'),
             "name": team.get('Name'),
-            "api_id": team.get('TeamID')
+            "api_id": team.get('TeamID'),
+            "primary_color": team.get('PrimaryColor'),
+            "secondary_color": team.get('SecondaryColor'),
         })
     return teams
 

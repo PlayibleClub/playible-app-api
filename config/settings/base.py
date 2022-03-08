@@ -83,6 +83,7 @@ THIRD_PARTY_APPS = [
 
     # cors
     "corsheaders",
+    "storages"
 ]
 
 LOCAL_APPS = [

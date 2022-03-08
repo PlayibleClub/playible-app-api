@@ -205,6 +205,7 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['hit_by_pitch'] = 0
                     token['stolen_bases'] = 0
                     token['position'] = None
+                    token['nft_image'] = None
 
             now = timezone.now()
             season = now.strftime('%Y').upper()
@@ -228,7 +229,11 @@ class AthleteTokenView(generics.GenericAPIView):
                         token['walks'] += athlete_stat.walks
                         token['hit_by_pitch'] += athlete_stat.hit_by_pitch
                         token['stolen_bases'] += athlete_stat.stolen_bases
-                        token['position'] = athlete_stat.position
+
+                    token['position'] = athlete.position
+
+                    if athlete.nft_image:
+                        token['nft_image'] = athlete.nft_image.url
 
             return Response({"total_count": len(tokens), "tokens": tokens}, status=status.HTTP_200_OK)
         except:
