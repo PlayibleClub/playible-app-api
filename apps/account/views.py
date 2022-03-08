@@ -175,12 +175,12 @@ class AthleteTokenView(generics.GenericAPIView):
         start_after = self.request.query_params.get('start_after', None)
 
         msg = {"all_tokens_info": {"owner": wallet}}
-        total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
+        # total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
 
         if start_after:
             msg['all_tokens_info']['start_after'] = start_after
 
-        total_tokens = terra.query_contract(contract, total_tokens_msg)
+        # total_tokens = terra.query_contract(contract, total_tokens_msg)
 
         # if limit:
         #     msg['all_tokens_info']['limit'] = int(limit)
@@ -230,7 +230,7 @@ class AthleteTokenView(generics.GenericAPIView):
                         token['stolen_bases'] += athlete_stat.stolen_bases
                         token['position'] = athlete_stat.position
 
-            return Response({"total_count": total_tokens, "array_count": len(tokens), "tokens": tokens}, status=status.HTTP_200_OK)
+            return Response({"total_count": len(tokens), "tokens": tokens}, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
