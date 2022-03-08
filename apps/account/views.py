@@ -230,7 +230,7 @@ class AthleteTokenView(generics.GenericAPIView):
                         token['stolen_bases'] += athlete_stat.stolen_bases
                         token['position'] = athlete_stat.position
 
-            return Response({"total_count": total_tokens, "tokens": tokens}, status=status.HTTP_200_OK)
+            return Response({"total_count": total_tokens, "array_count": len(tokens), "tokens": tokens}, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
