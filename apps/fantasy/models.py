@@ -50,6 +50,8 @@ class Team(BaseInfo):
     location = models.CharField(max_length=155)
     name = models.CharField(max_length=155)
     api_id = models.IntegerField(unique=True)
+    primary_color = models.CharField(max_length=155, null=True, blank=True)
+    secondary_color = models.CharField(max_length=155, null=True, blank=True)
 
     def __str__(self):
         return self.location + ' ' + self.name
