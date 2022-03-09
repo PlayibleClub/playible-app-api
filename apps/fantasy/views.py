@@ -35,25 +35,25 @@ class TeamViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.Retriev
     serializer_class = TeamSerializer
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description="Retrieves all NBA team data and saves it into the database.")
-    def create(self, request, *args, **kwargs):
-        response = requests.get('scores/json/teams')
+    # @swagger_auto_schema(operation_description="Retrieves all NBA team data and saves it into the database.")
+    # def create(self, request, *args, **kwargs):
+    #     response = requests.get('scores/json/teams')
 
-        if response['status'] == settings.RESPONSE['STATUS_OK']:
-            team_data = utils.parse_team_list_data(response['response'])
-            serializer = self.get_serializer(data=team_data, many=True)
+    #     if response['status'] == settings.RESPONSE['STATUS_OK']:
+    #         team_data = utils.parse_team_list_data(response['response'])
+    #         serializer = self.get_serializer(data=team_data, many=True)
 
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            content = {
-                "message": "Failed to fetch data from Stats Perform API",
-                "response": response['response']
-            }
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    #         if serializer.is_valid():
+    #             serializer.save()
+    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #         else:
+    #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    #     else:
+    #         content = {
+    #             "message": "Failed to fetch data from Stats Perform API",
+    #             "response": response['response']
+    #         }
+    #         return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GameScheduleView(generics.GenericAPIView):

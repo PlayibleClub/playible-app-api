@@ -7,7 +7,7 @@ from apps.fantasy.views import *
 
 router = DefaultRouter()
 router.register(r'team', TeamViewSet)
-router.register(r'athlete/api', AthleteAPIViewSet)
+# router.register(r'athlete/api', AthleteAPIViewSet)
 router.register(r'athlete', AthleteViewSet)
 router.register(r'game', GameViewSet)
 router.register(r'game_team', GameTeamViewSet)

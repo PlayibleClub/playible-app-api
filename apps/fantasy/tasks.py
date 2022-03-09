@@ -12,7 +12,7 @@ from django.utils import timezone
 from config import celery_app
 
 from apps.fantasy import requests
-from apps.fantasy.models import Athlete, Game, GameAthleteStat, GameTeam
+from apps.fantasy.models import Athlete, Game, GameAthleteStat, GameTeam, Team
 from apps.core import utils
 
 User = get_user_model()
@@ -132,6 +132,68 @@ def update_athlete_stats():
             )
 
         return(len(new_athlete_stats) + len(existing_athlete_stats))
+
+
+@celery_app.task()
+def sync_teams_data():
+    """Task for syncing all teams data from sportsdata.io"""
+
+    response = requests.get('scores/json/teams')
+
+    if response['status'] == settings.RESPONSE['STATUS_OK']:
+        teams_data = utils.parse_team_list_data(response['response'])
+
+        for team in teams_data:
+            Team.objects.update_or_create(
+                api_id=team['api_id'],
+                defaults={
+                    'location': team['location'],
+                    'name': team['name'],
+                    'primary_color': team['primary_color'],
+                    'secondary_color': team['secondary_color']
+                }
+            )
+
+        return len(teams_data)
+
+
+@celery_app.task()
+def sync_athletes_data():
+    """Task for syncing all athlete data from sportsdata.io"""
+
+    response = requests.get('scores/json/Players')
+
+    if response['status'] == settings.RESPONSE['STATUS_OK']:
+        athlete_data = utils.parse_athlete_list_data(response['response'])
+
+        for athlete in athlete_data:
+            team = Team.objects.get(api_id=athlete['team_id'])
+
+            if athlete['is_active'] == 'Active':
+                athlete['is_active'] = True
+            else:
+                athlete['is_active'] = False
+
+            if athlete['is_injured'] is None:
+                athlete['is_injured'] = False
+            else:
+                athlete['is_injured'] = True
+
+            Athlete.objects.update_or_create(
+                api_id=athlete['api_id'],
+                defaults={
+                    'first_name': athlete['first_name'],
+                    'last_name': athlete['last_name'],
+                    'position': athlete['position'],
+                    'salary': athlete['salary'],
+                    'jersey': athlete['jersey'],
+                    'is_active': athlete['is_active'],
+                    'is_injured': athlete['is_injured'],
+                    'team': team
+                }
+            )
+
+        return len(athlete_data)
 
 
 @celery_app.task(soft_time_limit=99999999, time_limit=99999999)

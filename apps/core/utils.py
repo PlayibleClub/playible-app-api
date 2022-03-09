@@ -37,6 +37,7 @@ def parse_team_list_data(data):
             "primary_color": team.get('PrimaryColor'),
             "secondary_color": team.get('SecondaryColor'),
         })
+
     return teams
 
 
