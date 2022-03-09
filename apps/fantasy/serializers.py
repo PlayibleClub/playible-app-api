@@ -253,8 +253,10 @@ class GameTeamCreateSerializer(serializers.Serializer):
         athletes = validated_data['athletes']
 
         account, created = Account.objects.get_or_create(
-            username=wallet_addr,
-            wallet_addr=wallet_addr
+            wallet_addr=wallet_addr,
+            defaults={
+                'username': wallet_addr,
+            }
         )
 
         game_team = GameTeam.objects.create(
