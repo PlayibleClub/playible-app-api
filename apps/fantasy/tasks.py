@@ -122,7 +122,7 @@ def update_athlete_stats():
                     existing_athlete_stats.append(athlete_stat_obj)
 
         if len(new_athlete_stats) > 0:
-            GameAthleteStat.objects.bulk_create(new_athlete_stats)
+            GameAthleteStat.objects.bulk_create(new_athlete_stats, 20)
         if len(existing_athlete_stats) > 0:
             GameAthleteStat.objects.bulk_update(
                 existing_athlete_stats,
