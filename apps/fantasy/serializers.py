@@ -168,12 +168,14 @@ class GameCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Game
         fields = [
+            'id',
             'name',
             'start_datetime',
             'duration',
             'prize',
             'image'
         ]
+        read_only_fields = ['id']
 
 
 class GameAthleteSerializer(serializers.Serializer):
