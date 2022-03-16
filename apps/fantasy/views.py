@@ -249,7 +249,9 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                 game_teams_arr.append({
                     'name': 'Admin',
                     'fantasy_score': 0,
-                    'account': 'Admin'
+                    'account': {
+                        'wallet_addr': 'terra1jrg2hv92xpjl4wwgd84jcm4cs2pfmzdxl6y2sx'
+                    }
                 })
 
         return game_teams_arr
