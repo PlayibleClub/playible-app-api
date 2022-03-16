@@ -237,8 +237,22 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
     def leaderboard(self, request, id=None):
         game = self.get_object()
         game_teams = game.teams.order_by('-fantasy_score')
+        game_teams_arr = []
 
-        return game_teams
+        for game_team in game_teams:
+            game_teams_arr.append(game_team)
+
+        if len(game_teams < 10):
+            n = 10 - len(game_teams)
+
+            for i in range(n):
+                game_teams_arr.append({
+                    'name': 'Admin',
+                    'fantasy_score': 0,
+                    'account': 'Admin'
+                })
+
+        return game_teams_arr
 
     @ paginate
     @ action(detail=False)
