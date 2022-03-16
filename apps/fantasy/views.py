@@ -242,7 +242,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
         for game_team in game_teams:
             game_teams_arr.append(game_team)
 
-        if len(game_teams < 10):
+        if len(game_teams) < 10:
             n = 10 - len(game_teams)
 
             for i in range(n):
