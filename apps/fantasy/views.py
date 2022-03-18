@@ -311,6 +311,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                     athletes = []
 
                     data = {
+                        'id': team.id,
                         'name': team.name,
                         'fantasy_score': team.fantasy_score,
                     }
