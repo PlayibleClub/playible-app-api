@@ -208,6 +208,12 @@ class GameTeamLeaderboardSerializer(serializers.ModelSerializer):
         ]
 
 
+class GameTeamUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GameTeam
+        fields = ['name']
+
+
 class GameTeamCreateSerializer(serializers.Serializer):
     name = serializers.CharField()
     game = serializers.IntegerField()

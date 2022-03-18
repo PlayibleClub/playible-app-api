@@ -338,7 +338,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Manage game teams in the database"""
     queryset = GameTeam.objects.all()
     serializer_class = GameTeamCreateSerializer
@@ -347,6 +347,7 @@ class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.C
 
     action_serializers = {
         'create': GameTeamCreateSerializer,
+        'update': GameTeamUpdateSerializer
     }
 
     def get_serializer_class(self):
