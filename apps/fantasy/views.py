@@ -292,6 +292,58 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
         return teams
 
+    @ action(detail=True)
+    def registered_teams_detail(self, request, id=None):
+        game = self.get_object()
+        wallet_addr = self.request.query_params.get('wallet_addr', None)
+        teams = GameTeam.objects.none()
+        teams_data = []
+
+        if wallet_addr is not None:
+            account = Account.objects.filter(Q(wallet_addr=wallet_addr)).first()
+
+            if account:
+                teams = GameTeam.objects.filter(Q(account=account) & Q(game=game)).order_by('pk')
+
+                for team in teams:
+                    assets = team.assets.all()
+
+                    athletes = []
+
+                    data = {
+                        'name': team.name,
+                        'fantasy_score': team.fantasy_score,
+                    }
+
+                    for asset in assets:
+                        athlete = asset.game_athlete.athlete
+
+                        now = timezone.now()
+                        season = now.strftime('%Y').upper()
+
+                        athlete_stat = GameAthleteStat.objects.filter(Q(athlete=athlete) & Q(season=season)).first()
+                        fantasy_score = 0
+
+                        if athlete_stat:
+                            fantasy_score = athlete_stat.fantasy_score
+
+                        athlete_obj = {
+                            'id': athlete.id,
+                            'first_name': athlete.first_name,
+                            'last_name': athlete.last_name,
+                            'fantasy_score': fantasy_score
+                        }
+
+                        if athlete.nft_image:
+                            athlete_obj['nft_image'] = athlete.nft_image.url
+
+                        athletes.append(athlete_obj)
+
+                    data['athletes'] = athletes
+                    teams_data.append(data)
+
+        return Response(teams_data)
+
     @ action(detail=False, methods=['post'])
     def test_update_scores(self, request):
         now = timezone.now()
