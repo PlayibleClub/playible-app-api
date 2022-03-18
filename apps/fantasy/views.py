@@ -332,7 +332,8 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                             'id': athlete.id,
                             'first_name': athlete.first_name,
                             'last_name': athlete.last_name,
-                            'fantasy_score': fantasy_score
+                            'fantasy_score': fantasy_score,
+                            'nft_image': None
                         }
 
                         if athlete.nft_image:
@@ -426,6 +427,7 @@ class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.C
         athletes = []
 
         data = {
+            'id': team.id,
             'name': team.name,
             'fantasy_score': team.fantasy_score,
         }
@@ -446,7 +448,8 @@ class GameTeamViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.C
                 'id': athlete.id,
                 'first_name': athlete.first_name,
                 'last_name': athlete.last_name,
-                'fantasy_score': fantasy_score
+                'fantasy_score': fantasy_score,
+                'nft_image': None
             }
 
             if athlete.nft_image:
