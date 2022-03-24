@@ -209,6 +209,36 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         return Response({"athlete_stat": serialized_athlete_stat})
 
+    @ action(detail=False)
+    def get_add_athletes_open_pack_msg(self, request):
+        athlete_info = []
+
+        athletes = Athlete.objects.filter(Q(jersey__isnull=False) & Q(position__isnull=False))
+
+        for athlete in athletes:
+            token_uri = None
+
+            if athlete.nft_image is not None:
+                token_uri = athlete.nft_image.url
+
+            athlete_info.append({
+                'athlete_id': str(athlete.id),
+                'token_uri': token_uri,
+                'symbol': '',
+                'name': athlete.first_name + ' ' + athlete.last_name,
+                'team': athlete.team.name,
+                'position': athlete.position
+            })
+
+        msg = {
+            'add_athletes': {
+                'pack_type': 'starter',
+                'athlete_info': athlete_info
+            }
+        }
+
+        return Response(msg)
+
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Manage games in the database"""
