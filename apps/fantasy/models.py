@@ -55,6 +55,7 @@ class Team(BaseInfo):
     location = models.CharField(max_length=155)
     name = models.CharField(max_length=155)
     api_id = models.IntegerField(unique=True)
+    key = models.CharField(max_length=155, null=True, blank=True, default=None)
     primary_color = models.CharField(max_length=155, null=True, blank=True)
     secondary_color = models.CharField(max_length=155, null=True, blank=True)
 
