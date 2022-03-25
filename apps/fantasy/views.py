@@ -224,7 +224,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
             athlete_info.append({
                 'athlete_id': str(athlete.id),
                 'token_uri': token_uri,
-                'symbol': '',
+                'symbol': str(athlete.api_id),
                 'name': athlete.first_name + ' ' + athlete.last_name,
                 'team': athlete.team.key,
                 'position': athlete.position
