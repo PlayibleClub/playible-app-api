@@ -12,7 +12,7 @@ services:
       dockerfile: ./compose/production/django/Dockerfile
     image: playible_app_api_production_django
     depends_on:
-      - postgres
+      # - postgres
       - redis
     env_file:
       - ./.envs/.production/.django
