@@ -27,6 +27,7 @@ async def query_contract(contract_addr, query_msg):
     try:
         terra = AsyncLCDClient("https://bombay-lcd.terra.dev", "bombay-12")
         response = await terra.wasm.contract_query(contract_addr, query_msg)
+        await terra.session.close()
         return response
     except Exception as e:
         raise serializers.ValidationError('Failed to retrieve information from the blockchain: ' + str(e))

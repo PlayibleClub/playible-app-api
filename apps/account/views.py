@@ -266,6 +266,9 @@ class AthleteTokenView(generics.GenericAPIView):
                 athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
                 athlete_ids.append(athlete_id)
 
+            athlete_ids = set(athlete_ids)
+            athlete_ids = list(athlete_ids)
+
             athletes = Athlete.objects.filter(id__in=athlete_ids)
             athlete_stats = GameAthleteStat.objects.filter(Q(athlete__id__in=athlete_ids) & Q(season=season))
 
