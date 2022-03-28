@@ -192,7 +192,8 @@ class AthleteTokenView(generics.GenericAPIView):
 
         response = terra.query_contract(contract, msg)
 
-        game_ids = list(GameTeam.objects.filter(Q(account=account)).order_by(
+        now = timezone.now()
+        game_ids = list(GameTeam.objects.filter(Q(account=account) & Q(game__start_datetime__lte=now)).order_by(
             'game__id').distinct('game__id').values_list('game__id', flat=True))
         locked_token_ids = []
 
