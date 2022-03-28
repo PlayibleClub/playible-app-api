@@ -260,7 +260,6 @@ class AthleteTokenView(generics.GenericAPIView):
             season = now.strftime('%Y').upper()
 
             for token in tokens:
-                # Retrieve fantasy score for each token based on game sched
                 athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
                 athlete_ids.append(athlete_id)
 
