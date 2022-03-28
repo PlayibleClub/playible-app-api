@@ -11,10 +11,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from drf_yasg.utils import swagger_auto_schema
 
+from config.settings.base import GAME_CONTRACT
+
 from apps.fantasy import requests
 from apps.account import models, serializers
 from apps.core import utils, terra
-from apps.fantasy.models import Athlete, GameAthleteStat, GameSchedule
+from apps.fantasy.models import Athlete, GameAthleteStat, GameSchedule, GameTeam
 
 # TODO: Define permissions for create and update actions
 
@@ -190,8 +192,28 @@ class AthleteTokenView(generics.GenericAPIView):
 
         response = terra.query_contract(contract, msg)
 
+        game_ids = list(GameTeam.objects.filter(Q(account=account)).order_by(
+            'game__id').distinct('game__id').values_list('game__id', flat=True))
+        locked_token_ids = []
+
+        # Start of loop per game id
+        for game_id in game_ids:
+            player_info_msg = {
+                "player_info": {
+                    "game_id": str(game_id),
+                    "player_addr": wallet
+                }
+            }
+            player_info_res = terra.query_contract(GAME_CONTRACT, player_info_msg)
+
+            if player_info_res['is_claimed'] == False:
+                locked_token_ids += player_info_res['locked_tokens']
+        # End of loop per game id
+
         try:
             tokens = response
+            athlete_ids = []
+            athletes = []
 
             for token in tokens:
                 if "fantasy_score" not in token:
@@ -206,6 +228,33 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['stolen_bases'] = 0
                     token['position'] = None
                     token['nft_image'] = None
+                    token['is_locked'] = False
+
+            for locked_token_id in locked_token_ids:
+                all_nft_info_msg = {
+                    "all_nft_info": {
+                        "token_id": locked_token_id
+                    }
+                }
+                all_nft_info_res = terra.query_contract(contract, all_nft_info_msg)
+                tokens.append({
+                    'token_id': locked_token_id,
+                    'token_info': all_nft_info_res,
+                    'fantasy_score': 0,
+                    'singles': 0,
+                    'doubles': 0,
+                    'triples': 0,
+                    'home_runs': 0,
+                    'runs_batted_in': 0,
+                    'walks': 0,
+                    'hit_by_pitch': 0,
+                    'stolen_bases': 0,
+                    'position': None,
+                    'nft_image': None,
+                    'is_locked': True
+                })
+                athlete_id = int(all_nft_info_res['info']['extension']['athlete_id'])
+                athlete_ids.append(athlete_id)
 
             now = timezone.now()
             season = now.strftime('%Y').upper()
@@ -213,11 +262,19 @@ class AthleteTokenView(generics.GenericAPIView):
             for token in tokens:
                 # Retrieve fantasy score for each token based on game sched
                 athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
-                athlete = Athlete.objects.filter(pk=athlete_id).first()
+                athlete_ids.append(athlete_id)
+
+            athletes = Athlete.objects.filter(id__in=athlete_ids)
+            athlete_stats = GameAthleteStat.objects.filter(Q(athlete__id__in=athlete_ids) & Q(season=season))
+
+            for token in tokens:
+                # Retrieve fantasy score for each token based on game sched
+                athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                athlete = next((item for item in athletes if item.id == athlete_id), None)
 
                 if athlete:
                     # Search athlete if it has a stat data
-                    athlete_stat = GameAthleteStat.objects.filter(Q(athlete=athlete) & Q(season=season)).first()
+                    athlete_stat = next((item for item in athlete_stats if item.athlete.id == athlete_id), None)
 
                     if athlete_stat:
                         token['fantasy_score'] += athlete_stat.fantasy_score
