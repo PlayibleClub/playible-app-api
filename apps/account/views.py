@@ -204,10 +204,13 @@ class AthleteTokenView(generics.GenericAPIView):
                     "player_addr": wallet
                 }
             }
-            player_info_res = terra.query_contract(GAME_CONTRACT, player_info_msg)
+            try:
+                player_info_res = terra.query_contract(GAME_CONTRACT, player_info_msg)
 
-            if player_info_res['is_claimed'] == False:
-                locked_token_ids += player_info_res['locked_tokens']
+                if player_info_res['is_claimed'] == False:
+                    locked_token_ids += player_info_res['locked_tokens']
+            except:
+                pass
         # End of loop per game id
 
         try:
