@@ -75,7 +75,7 @@ def update_athlete_stats():
 
     season = now.strftime('%Y').upper()
     # season = '2021'
-    url = 'stats/json/PlayerSeasonStats/' + season
+    url = 'stats/json/PlayerSeasonStats/' + season + 'PRE'
 
     response = requests.get(url)
 
