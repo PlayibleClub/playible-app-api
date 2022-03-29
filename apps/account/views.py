@@ -173,53 +173,24 @@ class AthleteTokenView(generics.GenericAPIView):
             contract_addr=contract
         )
 
-        limit = self.request.query_params.get('limit', None)
-        start_after = self.request.query_params.get('start_after', None)
+        owned_tokens_msg = {"owner_tokens_info": {"owner": wallet}}
+        owned_tokens_response = terra.query_contract(contract, owned_tokens_msg)
 
-        msg = {"owner_tokens_info": {"owner": wallet}}
-        # total_tokens_msg = {"owner_num_tokens": {"owner": wallet}}
-
-        # if start_after:
-        #     msg['all_tokens_info']['start_after'] = start_after
-
-        # total_tokens = terra.query_contract(contract, total_tokens_msg)
-
-        # if limit:
-        #     msg['all_tokens_info']['limit'] = int(limit)
-        # else:
-        #     if total_tokens:
-        #         msg['all_tokens_info']['limit'] = total_tokens
-
-        response = terra.query_contract(contract, msg)
-
-        now = timezone.now()
-        game_ids = list(GameTeam.objects.filter(Q(account=account) & Q(game__start_datetime__lte=now)).order_by(
-            'game__id').distinct('game__id').values_list('game__id', flat=True))
-        locked_token_ids = []
-
-        # Start of loop per game id
-        for game_id in game_ids:
-            player_info_msg = {
-                "player_info": {
-                    "game_id": str(game_id),
-                    "player_addr": wallet
-                }
+        locked_tokens_msg = {
+            "player_locked_tokens": {
+                "player_addr": wallet
             }
-            try:
-                player_info_res = terra.query_contract(GAME_CONTRACT, player_info_msg)
-
-                if player_info_res['is_claimed'] == False:
-                    locked_token_ids += player_info_res['locked_tokens']
-            except:
-                pass
-        # End of loop per game id
+        }
+        locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
 
         try:
-            tokens = response
+            owned_tokens = owned_tokens_response
+            locked_tokens = locked_tokens_response
+
             athlete_ids = []
             athletes = []
 
-            for token in tokens:
+            for token in owned_tokens:
                 if "fantasy_score" not in token:
                     token['fantasy_score'] = 0
                     token['singles'] = 0
@@ -234,31 +205,22 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['nft_image'] = None
                     token['is_locked'] = False
 
-            for locked_token_id in locked_token_ids:
-                all_nft_info_msg = {
-                    "all_nft_info": {
-                        "token_id": locked_token_id
-                    }
-                }
-                all_nft_info_res = terra.query_contract(contract, all_nft_info_msg)
-                tokens.append({
-                    'token_id': locked_token_id,
-                    'token_info': all_nft_info_res,
-                    'fantasy_score': 0,
-                    'singles': 0,
-                    'doubles': 0,
-                    'triples': 0,
-                    'home_runs': 0,
-                    'runs_batted_in': 0,
-                    'walks': 0,
-                    'hit_by_pitch': 0,
-                    'stolen_bases': 0,
-                    'position': None,
-                    'nft_image': None,
-                    'is_locked': True
-                })
-                athlete_id = int(all_nft_info_res['info']['extension']['athlete_id'])
-                athlete_ids.append(athlete_id)
+            for token in locked_tokens:
+                if "fantasy_score" not in token:
+                    token['fantasy_score'] = 0
+                    token['singles'] = 0
+                    token['doubles'] = 0
+                    token['triples'] = 0
+                    token['home_runs'] = 0
+                    token['runs_batted_in'] = 0
+                    token['walks'] = 0
+                    token['hit_by_pitch'] = 0
+                    token['stolen_bases'] = 0
+                    token['position'] = None
+                    token['nft_image'] = None
+                    token['is_locked'] = True
+
+            tokens = locked_tokens + owned_tokens
 
             now = timezone.now()
             season = now.strftime('%Y').upper()
@@ -274,12 +236,10 @@ class AthleteTokenView(generics.GenericAPIView):
             athlete_stats = GameAthleteStat.objects.filter(Q(athlete__id__in=athlete_ids) & Q(season=season))
 
             for token in tokens:
-                # Retrieve fantasy score for each token based on game sched
                 athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
                 athlete = next((item for item in athletes if item.id == athlete_id), None)
 
                 if athlete:
-                    # Search athlete if it has a stat data
                     athlete_stat = next((item for item in athlete_stats if item.athlete.id == athlete_id), None)
 
                     if athlete_stat:
