@@ -24,9 +24,11 @@ def update_team_scores():
     """Task for updating all active games' teams scores per day"""
 
     # Task will run every 11:55 PM EST / 12:55 PM (next day) Manila time, so subtract -1 to day to get previous day since default timezone of Django is Asia/Manila
-    now = timezone.now() - timedelta(days=1)
+    date_query = timezone.now() - timedelta(days=1)
+    date_query = date_query.strftime('%Y-%b-%d').upper()
 
-    date_query = now.strftime('%Y-%b-%d').upper()
+    now = timezone.now()
+
     url = 'stats/json/PlayerGameStatsByDate/' + date_query
 
     response = requests.get(url)
