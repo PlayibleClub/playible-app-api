@@ -373,11 +373,11 @@ def generate_name_images():
         f = open(file_name, 'w')
 
         svg = """
-           <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.55 31.84">
+           <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.16 27.35">
                 <defs>
                     <style>
                     .cls-1 {
-                        font-size: 12px;
+                        font-size: 7px;
                         fill: #fff;
                         font-family: Montserrat-BoldItalic, Montserrat;
                         font-weight: 700;
@@ -389,8 +389,8 @@ def generate_name_images():
                     }
                     </style>
                 </defs>
-                <text class="cls-1" transform="translate(2.26 14.87) rotate(-8.42)">MIKE</text>
-                <text class="cls-1" transform="translate(1.49 28.77) rotate(-8.42)">TROUT</text>
+                <text class="cls-1" transform="translate(1.88 11.15) rotate(-8.42)">MIKE</text>
+                <text class="cls-1" transform="translate(1.12 25.05) rotate(-8.42)">TROUT</text>
             </svg>
         """
 
@@ -433,7 +433,7 @@ def generate_position_images():
                 <defs>
                     <style>
                     .cls-1 {
-                        font-size: 10px;
+                        font-size: 8px;
                         font-family: Montserrat-BoldItalic, Montserrat;
                         font-weight: 700;
                         font-style: italic;
@@ -446,7 +446,7 @@ def generate_position_images():
                 </defs>
                 <text class="cls-1" transform="translate(1.24 14.23) rotate(-8.42)">CF</text>
                 <polygon class="cls-2" points="1.7 1.28 1.7 2.31 10.13 1.04 10.13 0 1.7 1.28"/>
-            </svg>a
+            </svg>
         """
 
         image_dict = xmltodict.parse(svg)
