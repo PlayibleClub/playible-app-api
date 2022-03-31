@@ -143,7 +143,9 @@ class AthleteSerializer(serializers.ModelSerializer):
             'jersey',
             'is_active',
             'is_injured',
-            'nft_image'
+            'nft_image',
+            'jersey_image',
+            'name_image'
         ]
 
 

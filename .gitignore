@@ -285,6 +285,9 @@ vendors.js
 !.envs/.local/.postgres.sample
 
 /athlete_images
+/jersey_images
+/name_images
+/position_images
 
 .envs/.staging/.django
 

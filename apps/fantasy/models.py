@@ -24,6 +24,21 @@ class Athlete(BaseInfo):
         null=True,
         blank=True
     )
+    jersey_image = models.FileField(
+        upload_to='jersey/images/',
+        null=True,
+        blank=True
+    )
+    name_image = models.FileField(
+        upload_to='name/images/',
+        null=True,
+        blank=True
+    )
+    position_image = models.FileField(
+        upload_to='position/images/',
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.first_name + ' ' + self.last_name
