@@ -1,8 +1,12 @@
 from terra_sdk.client.lcd import AsyncLCDClient
+from terra_sdk.client.lcd.api.tx import CreateTxOptions
+from terra_sdk.core.wasm.msgs import MsgExecuteContract
+from terra_sdk.key.mnemonic import MnemonicKey
 from asgiref.sync import async_to_sync
 from rest_framework import serializers
 
 from apps.core import utils
+from config.settings.base import ADMIN_WALLET_MNEMONIC
 
 
 @async_to_sync
@@ -31,3 +35,22 @@ async def query_contract(contract_addr, query_msg):
         return response
     except Exception as e:
         raise serializers.ValidationError('Failed to retrieve information from the blockchain: ' + str(e))
+
+
+@async_to_sync
+async def create_and_sign_tx(msgs):
+    try:
+        mk = MnemonicKey(mnemonic=ADMIN_WALLET_MNEMONIC)
+        terra = AsyncLCDClient("https://bombay-lcd.terra.dev", "bombay-12")
+        wallet = terra.wallet(mk)
+        tx = await wallet.create_and_sign_tx(
+            CreateTxOptions(
+                msgs=msgs,
+                memo="",
+            )
+        )
+        response = await terra.tx.broadcast(tx)
+        await terra.session.close()
+        return response
+    except Exception as e:
+        raise serializers.ValidationError(str(e))

@@ -30,7 +30,7 @@ djangorestframework-simplejwt==5.0.0
 drf-yasg==1.20.0
 django-cors-headers==3.11.0
 asgiref==3.5.0
-terra-sdk==1.0.2
+terra-sdk==2.0.5
 requests==2.27.1
 dicttoxml==1.7.4
 xmltodict==0.12.0
