@@ -273,7 +273,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                 'position': athlete.position
             })
 
-            if len(athlete_info) == 30 or counter == len(athletes):
+            if len(athlete_info) == 20 or counter == len(athletes):
                 add_athletes_msg = {
                     "add_athletes": {
                         "pack_type": "starter",
