@@ -286,15 +286,15 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                     OPEN_PACK_CONTRACT,
                     add_athletes_msg
                 )
-                msgs.append(msg_execute)
+                msgs.append(add_athletes_msg)
 
                 athlete_info = []
 
             counter += 1
 
-        create_and_sign_tx(msgs)
+        # create_and_sign_tx(msgs)
 
-        return Response("success")
+        return Response(msgs)
 
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
