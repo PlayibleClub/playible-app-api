@@ -50,6 +50,7 @@ async def create_and_sign_tx(msgs):
             )
         )
         response = await terra.tx.broadcast(tx)
+        print(response)
         await terra.session.close()
         return response
     except Exception as e:
