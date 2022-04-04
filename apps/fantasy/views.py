@@ -255,9 +255,6 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         counter = 1
         athlete_info = []
 
-        print('OPEN_PACK_CONTRACT')
-        print(OPEN_PACK_CONTRACT)
-
         for athlete in athletes:
             token_uri = None
 
@@ -276,7 +273,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                 'position': athlete.position
             })
 
-            if len(athlete_info) == 20 or counter == len(athletes):
+            if len(athlete_info) == 30 or counter == len(athletes):
                 add_athletes_msg = {
                     "add_athletes": {
                         "pack_type": "starter",
@@ -290,9 +287,6 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                     add_athletes_msg
                 )
                 msgs.append(msg_execute)
-
-                if counter == 20:
-                    print(msg_execute)
 
                 athlete_info = []
 
