@@ -1,3 +1,4 @@
+from time import sleep
 from terra_sdk.client.lcd import AsyncLCDClient
 from terra_sdk.client.lcd.api.tx import CreateTxOptions
 from terra_sdk.core.wasm.msgs import MsgExecuteContract
@@ -53,6 +54,9 @@ async def create_and_sign_tx(msgs):
         print("HAHAHAH")
         print(response)
         await terra.session.close()
+        sleep(10)
         return response
     except Exception as e:
+        print("HAHAHAH 2")
+        print(str(e))
         raise serializers.ValidationError(str(e))
