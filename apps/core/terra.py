@@ -42,20 +42,24 @@ async def query_contract(contract_addr, query_msg):
 async def create_and_sign_tx(msgs):
     try:
         mk = MnemonicKey(mnemonic=ADMIN_WALLET_MNEMONIC)
+        print("HAHAHAH 1")
         terra = AsyncLCDClient(TERRA_ENDPOINT, TERRA_NETWORK)
+        print("HAHAHAH 2")
         wallet = terra.wallet(mk)
+        print("HAHAHAH 3")
         tx = await wallet.create_and_sign_tx(
             CreateTxOptions(
                 msgs=msgs,
                 memo="",
             )
         )
+        print("HAHAHAH 4")
         response = await terra.tx.broadcast(tx)
-        print("HAHAHAH")
+        print("HAHAHAH 5")
         print(response)
         await terra.session.close()
         return response
     except Exception as e:
-        print("HAHAHAH 2")
+        print("HAHAHAH 6")
         print(str(e))
         raise serializers.ValidationError(str(e))

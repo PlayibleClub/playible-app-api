@@ -289,13 +289,16 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                     OPEN_PACK_CONTRACT,
                     add_athletes_msg
                 )
-                msgs.append(add_athletes_msg)
+                msgs.append(msg_execute)
+
+                if counter == 20:
+                    print(msg_execute)
 
                 athlete_info = []
 
             counter += 1
 
-        # create_and_sign_tx(msgs)
+        create_and_sign_tx(msgs)
 
         return Response(msgs)
 
