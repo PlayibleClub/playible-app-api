@@ -273,7 +273,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                 'position': athlete.position
             })
 
-            if len(athlete_info) == 30 or counter == len(athletes):
+            if len(athlete_info) == 20 or counter == len(athletes):
                 add_athletes_msg = {
                     "add_athletes": {
                         "pack_type": "starter",
@@ -286,15 +286,15 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
                     OPEN_PACK_CONTRACT,
                     add_athletes_msg
                 )
-                msgs.append(add_athletes_msg)
+                msgs.append(msg_execute)
 
                 athlete_info = []
 
             counter += 1
 
-        # create_and_sign_tx(msgs)
+        create_and_sign_tx(msgs)
 
-        return Response(msgs)
+        return Response("success")
 
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
