@@ -54,7 +54,6 @@ async def create_and_sign_tx(msgs):
         print("HAHAHAH")
         print(response)
         await terra.session.close()
-        sleep(10)
         return response
     except Exception as e:
         print("HAHAHAH 2")

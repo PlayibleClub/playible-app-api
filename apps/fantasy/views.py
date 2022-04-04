@@ -255,6 +255,9 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         counter = 1
         athlete_info = []
 
+        print('OPEN_PACK_CONTRACT')
+        print(OPEN_PACK_CONTRACT)
+
         for athlete in athletes:
             token_uri = None
 
