@@ -185,16 +185,17 @@ class AthleteTokenView(generics.GenericAPIView):
         owned_tokens_msg = {"owner_tokens_info": {"owner": wallet}}
         owned_tokens_response = terra.query_contract(contract, owned_tokens_msg)
 
-        locked_tokens_msg = {
-            "player_locked_tokens": {
-                "player_addr": wallet
-            }
-        }
-        locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
+        # locked_tokens_msg = {
+        #     "player_locked_tokens": {
+        #         "player_addr": wallet
+        #     }
+        # }
+        # locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
 
         try:
             owned_tokens = owned_tokens_response
-            locked_tokens = locked_tokens_response
+            # locked_tokens = locked_tokens_response
+            locked_tokens = []
 
             athlete_ids = []
             athletes = []
