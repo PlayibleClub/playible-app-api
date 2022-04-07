@@ -166,6 +166,15 @@ class AthleteTokenView(generics.GenericAPIView):
     serializer_class = serializers.AssetSerializer
 
     def get(self, request, wallet=None, contract=None):
+        def get_athlete_id(token):
+            attributes = token['token_info']['info']['extension']['attributes']
+
+            for attribute in attributes:
+                if attribute['trait_type'] == 'athlete_id':
+                    return int(attribute['value'])
+
+            return None
+
         account, is_created = models.Account.objects.get_or_create(
             wallet_addr=wallet
         )
@@ -226,7 +235,7 @@ class AthleteTokenView(generics.GenericAPIView):
             season = now.strftime('%Y').upper()
 
             for token in tokens:
-                athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                athlete_id = get_athlete_id(token)
                 athlete_ids.append(athlete_id)
 
             athlete_ids = set(athlete_ids)
@@ -236,7 +245,7 @@ class AthleteTokenView(generics.GenericAPIView):
             athlete_stats = GameAthleteStat.objects.filter(Q(athlete__id__in=athlete_ids) & Q(season=season))
 
             for token in tokens:
-                athlete_id = int(token['token_info']['info']['extension']['athlete_id'])
+                athlete_id = get_athlete_id(token)
                 athlete = next((item for item in athletes if item.id == athlete_id), None)
 
                 if athlete:
