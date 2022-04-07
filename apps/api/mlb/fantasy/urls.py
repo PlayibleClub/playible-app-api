@@ -3,7 +3,7 @@ from django.conf.urls import url
 
 from rest_framework.routers import DefaultRouter
 
-from apps.api.mbl.fantasy.views import *
+from apps.api.mlb.fantasy.views import *
 
 router = DefaultRouter()
 router.register(r'team', TeamViewSet)

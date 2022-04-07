@@ -87,6 +87,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.api",
     "apps.users",
     "apps.core",
     "apps.account",

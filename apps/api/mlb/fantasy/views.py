@@ -22,7 +22,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 from apps.fantasy.models import *
 from apps.fantasy import requests
-from apps.api.mbl.fantasy.serializers import *
+from apps.fantasy.serializers import *
 from apps.core import utils
 from apps.core.utils import paginate
 from apps.core.terra import create_and_sign_tx
@@ -116,7 +116,7 @@ class AthleteAPIViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         operation_description="Creates an athlete instance in the database with the data from stats perform. The input could either be the name of the athlete or its corresponding id from stats perform."
     )
     def create(self, request, *args, **kwargs):
-        response = requests.get('scores/json/Players')
+        response = requests.get('mlb/scores/json/Players')
 
         if response['status'] == settings.RESPONSE['STATUS_OK']:
             athlete_data = utils.parse_athlete_list_data(response['response'])
@@ -439,7 +439,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
 
         date_query = now.strftime('%Y-%b-%d').upper()
         # url = 'stats/json/PlayerGameStatsByDate/' + date_query
-        url = 'stats/json/PlayerGameStatsByDate/' + '2017-SEP-01'
+        url = 'mlb/stats/json/PlayerGameStatsByDate/' + '2017-SEP-01'
 
         response = requests.get(url)
 

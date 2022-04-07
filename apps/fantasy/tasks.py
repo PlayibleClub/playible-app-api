@@ -24,8 +24,8 @@ athlete_ids = [10009104, 10001087, 10008455, 10003268, 10000040, 10001958, 10009
 
 
 @celery_app.task()
-def update_team_scores():
-    """Task for updating all active games' teams scores per day"""
+def update_mlb_team_scores():
+    """Task for updating all mlb active games' teams scores per day"""
 
     # Task will run every 11:55 PM EST / 12:55 PM (next day) Manila time, so subtract -1 to day to get previous day since default timezone of Django is Asia/Manila
     date_query = timezone.now() - timedelta(days=1)
@@ -33,7 +33,7 @@ def update_team_scores():
 
     now = timezone.now()
 
-    url = 'stats/json/PlayerGameStatsByDate/' + date_query
+    url = 'mlb/stats/json/PlayerGameStatsByDate/' + date_query
 
     response = requests.get(url)
 
@@ -74,14 +74,14 @@ def update_team_scores():
 
 
 @celery_app.task()
-def update_athlete_stats():
+def update_mlb_athlete_stats():
     """Task for updating all athlete stats on the current season"""
 
     now = timezone.now()
 
     season = now.strftime('%Y').upper()
     # season = '2021'
-    url = 'stats/json/PlayerSeasonStats/' + season + 'PRE'
+    url = 'mlb/stats/json/PlayerSeasonStats/' + season + 'PRE'
 
     response = requests.get(url)
 
@@ -142,10 +142,12 @@ def update_athlete_stats():
 
 
 @celery_app.task()
-def sync_teams_data():
+def sync_mlb_teams_data():
     """Task for syncing all teams data from sportsdata.io"""
 
-    response = requests.get('scores/json/teams')
+    response = requests.get('mlb/scores/json/teams')
+
+    print(response)
 
     if response['status'] == settings.RESPONSE['STATUS_OK']:
         teams_data = utils.parse_team_list_data(response['response'])
@@ -166,10 +168,10 @@ def sync_teams_data():
 
 
 @celery_app.task()
-def sync_athletes_data():
+def sync_mlb_athletes_data():
     """Task for syncing all athlete data from sportsdata.io"""
 
-    response = requests.get('scores/json/Players')
+    response = requests.get('mlb/scores/json/Players')
 
     if response['status'] == settings.RESPONSE['STATUS_OK']:
         athlete_data = utils.parse_athlete_list_data(response['response'])
@@ -205,7 +207,7 @@ def sync_athletes_data():
 
 
 @celery_app.task()
-def init_athletes_data_csv():
+def init_mlb_athletes_data_csv():
     """Task for initializing all athlete data based on csv file"""
     with open('athletes.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')

@@ -46,8 +46,9 @@ urlpatterns = [
     # Your stuff: custom urls includes go here
     path(SWAGGER_URL, schema_view.with_ui('swagger', cache_timeout=0)),
 
-    path("fantasy/", include('apps.fantasy.urls')),
-    path("account/", include('apps.account.urls')),
+    # path("fantasy/", include('apps.fantasy.urls')),
+    # path("account/", include('apps.account.urls')),
+    path("api/", include(('apps.api.urls', 'api'), namespace="api")),
 
     # custom urls
     # path('account/assets/account/<str:wallet>/collection/<str:contract>', account_views.AccountAssetView.as_view()),

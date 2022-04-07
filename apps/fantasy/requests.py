@@ -9,7 +9,7 @@ import requests
 from requests.exceptions import HTTPError
 from django.conf import settings
 
-HOST = 'https://api.sportsdata.io/v3/mlb/'
+HOST = 'https://api.sportsdata.io/v3/'
 KEY = os.environ.get('SPORTDATAIO_KEY', '')
 
 
