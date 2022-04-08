@@ -288,6 +288,7 @@ vendors.js
 /jersey_images
 /name_images
 /position_images
+/athlete_animations
 
 .envs/.staging/.django
 
