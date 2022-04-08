@@ -2,9 +2,17 @@
 from functools import wraps
 
 from django.conf import settings
-from django.db.models import QuerySet
+from django.db.models import QuerySet, TextChoices
+from django.utils.translation import gettext_lazy as _
+
 
 from rest_framework.response import Response
+
+
+class SportType(TextChoices):
+    MLB = 'mlb', _('mlb')
+    NBA = 'nba', _('nba')
+    NFL = 'nfl', _('nfl')
 
 
 def paginate(func):

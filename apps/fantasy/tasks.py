@@ -159,6 +159,7 @@ def sync_mlb_teams_data():
                     'location': team['location'],
                     'name': team['name'],
                     'key': team['key'],
+                    'sport': utils.SportType.MLB,
                     'primary_color': team['primary_color'],
                     'secondary_color': team['secondary_color']
                 }

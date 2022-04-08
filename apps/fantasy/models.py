@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from apps.core.models import BaseInfo
 from apps.account.models import Account, Asset
+from apps.core.utils import SportType
 
 
 class Athlete(BaseInfo):
@@ -71,6 +72,13 @@ class Team(BaseInfo):
     name = models.CharField(max_length=155)
     api_id = models.IntegerField(unique=True)
     key = models.CharField(max_length=155, null=True, blank=True, default=None)
+    sport = models.CharField(
+        max_length=55,
+        choices=SportType.choices,
+        null=True,
+        blank=True,
+        default=SportType.MLB
+    )
     primary_color = models.CharField(max_length=155, null=True, blank=True)
     secondary_color = models.CharField(max_length=155, null=True, blank=True)
 
