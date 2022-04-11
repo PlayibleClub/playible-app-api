@@ -25,6 +25,11 @@ class Athlete(BaseInfo):
         null=True,
         blank=True
     )
+    animation = models.FileField(
+        upload_to='athlete/animations/',
+        null=True,
+        blank=True
+    )
     jersey_image = models.FileField(
         upload_to='jersey/images/',
         null=True,
