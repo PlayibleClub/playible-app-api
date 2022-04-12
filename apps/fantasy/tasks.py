@@ -324,10 +324,10 @@ def generate_athlete_animations():
         base_animation = None
         base_image = None
 
-        with open(output_dir + 'base_image.svg', 'r') as file:
+        with open(output_dir + 'mbl_base_image.svg', 'r') as file:
             base_image = file.read()
 
-        with open(output_dir + 'base_animation.svg', 'r') as file:
+        with open(output_dir + 'mbl_base_animation.svg', 'r') as file:
             base_animation = file.read()
 
         image_dict = xmltodict.parse(base_image)
@@ -338,17 +338,17 @@ def generate_athlete_animations():
             jersey = str(athlete.jersey)
 
         # Change first name
-        # image_dict['svg']['g'][0]['text'][0]['#text'] = athlete.first_name.upper()
+        image_dict['svg']['g'][4]['g'][3]['text'][0]['tspan']['#text'] = athlete.first_name.upper()
         # # Change last name
-        # image_dict['svg']['g'][0]['text'][1]['#text'] = athlete.last_name.upper()
+        image_dict['svg']['g'][4]['g'][3]['text'][1]['tspan']['#text'] = athlete.last_name.upper()
         # # Change primary color
-        # image_dict['svg']['path'][10]['@style'] = 'fill: #' + athlete.team.primary_color  # 'fill: #000000'
+        image_dict['svg']['g'][1]['g'][2]['g']['path']['@fill'] = '#' + athlete.team.primary_color
         # # Change secondary color
-        # image_dict['svg']['path'][9]['@style'] = 'fill: #' + athlete.team.secondary_color  # 'fill: #ffffff'
-        # # Change position
-        # image_dict['svg']['g'][0]['text'][2]['#text'] = athlete.position
+        image_dict['svg']['g'][1]['g'][0]['g']['path']['@fill'] = '#' + athlete.team.secondary_color
+        # Change position
+        image_dict['svg']['g'][4]['g'][2]['g']['text']['tspan']['#text'] = athlete.position
         # Change jersey number
-        image_dict['svg']['text']['#text'] = '69'
+        image_dict['svg']['g'][4]['g'][0]['g']['g']['text']['tspan']['#text'] = jersey
 
         image_xml = xmltodict.unparse(image_dict)
 
@@ -359,14 +359,12 @@ def generate_athlete_animations():
         f.write(image_xml)
         f.close()
 
-        break
+        f = open(file_name, 'rb')
 
-        # f = open(file_name, 'rb')
+        file = File(f)
+        athlete.animation.save(athlete_id + file_extension, file)
 
-        # file = File(f)
-        # athlete.nft_image.save(athlete_id + file_extension, file)
-
-        # f.close()
+        f.close()
 
 
 @ celery_app.task(soft_time_limit=99999999, time_limit=99999999)
