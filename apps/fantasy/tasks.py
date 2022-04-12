@@ -339,8 +339,10 @@ def generate_athlete_animations():
 
         # Change first name
         image_dict['svg']['g'][4]['g'][3]['text'][0]['tspan']['#text'] = athlete.first_name.upper()
+        image_dict['svg']['g'][4]['g'][3]['g']['text'][0]['tspan']['#text'] = athlete.first_name.upper()
         # # Change last name
         image_dict['svg']['g'][4]['g'][3]['text'][1]['tspan']['#text'] = athlete.last_name.upper()
+        image_dict['svg']['g'][4]['g'][3]['g']['text'][1]['tspan']['#text'] = athlete.last_name.upper()
         # # Change primary color
         image_dict['svg']['g'][1]['g'][2]['g']['path']['@fill'] = '#' + athlete.team.primary_color
         # # Change secondary color
@@ -365,6 +367,8 @@ def generate_athlete_animations():
         athlete.animation.save(athlete_id + file_extension, file)
 
         f.close()
+
+        break
 
 
 @ celery_app.task(soft_time_limit=99999999, time_limit=99999999)
