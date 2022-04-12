@@ -346,9 +346,9 @@ def generate_athlete_animations():
         # # Change secondary color
         image_dict['svg']['g'][1]['g'][0]['g']['path']['@fill'] = '#' + athlete.team.secondary_color
         # Change position
-        image_dict['svg']['g'][4]['g'][2]['g']['text']['tspan']['#text'] = athlete.position
+        image_dict['svg']['g'][4]['g'][2]['g']['text']['tspan']['#text'] = jersey
         # Change jersey number
-        image_dict['svg']['g'][4]['g'][0]['g']['g']['text']['tspan']['#text'] = jersey
+        image_dict['svg']['g'][4]['g'][0]['g']['g']['text']['tspan']['#text'] = athlete.position
 
         image_xml = xmltodict.unparse(image_dict)
 
