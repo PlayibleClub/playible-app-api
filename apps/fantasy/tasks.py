@@ -368,8 +368,6 @@ def generate_athlete_animations():
 
         f.close()
 
-        break
-
 
 @ celery_app.task(soft_time_limit=99999999, time_limit=99999999)
 def generate_jersey_images():
