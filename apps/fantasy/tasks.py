@@ -82,7 +82,7 @@ def update_mlb_athlete_stats():
 
     season = now.strftime('%Y').upper()
     # season = '2021'
-    url = 'mlb/stats/json/PlayerSeasonStats/' + season + 'PRE'
+    url = 'mlb/stats/json/PlayerSeasonStats/' + season
 
     response = requests.get(url)
 
