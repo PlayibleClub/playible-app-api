@@ -324,10 +324,10 @@ def generate_athlete_animations():
         base_animation = None
         base_image = None
 
-        with open(output_dir + 'mbl_base_image.svg', 'r') as file:
+        with open('mbl_base_image.svg', 'r') as file:
             base_image = file.read()
 
-        with open(output_dir + 'mbl_base_animation.svg', 'r') as file:
+        with open('mbl_base_animation.svg', 'r') as file:
             base_animation = file.read()
 
         image_dict = xmltodict.parse(base_image)
