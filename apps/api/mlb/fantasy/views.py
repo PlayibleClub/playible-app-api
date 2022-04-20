@@ -319,29 +319,34 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                 return self.action_serializers[self.action]
         return super(GameViewSet, self).get_serializer_class()
 
-    @ paginate
     @ action(detail=True)
     def leaderboard(self, request, id=None):
         game = self.get_object()
         game_teams = game.teams.order_by('-fantasy_score')
         game_teams_arr = []
 
-        for game_team in game_teams:
-            game_teams_arr.append(game_team)
+        for idx, game_team in enumerate(game_teams):
+            game_teams_arr.append({
+                'rank': idx + 1,
+                'player_addr': game_team.account.wallet_addr,
+                'team_name': game_team.name,
+                'fantasy_score': str(game_team.fantasy_score)
+            })
 
         if len(game_teams) < 10:
             n = 10 - len(game_teams)
 
             for i in range(n):
+                rank = i + len(game_teams) + 1
+
                 game_teams_arr.append({
-                    'name': 'Admin',
-                    'fantasy_score': 0,
-                    'account': {
-                        'wallet_addr': ADMIN_WALLET
-                    }
+                    'rank': rank,
+                    'player_addr': ADMIN_WALLET,
+                    'team_name': 'Admin',
+                    'fantasy_score': str(0)
                 })
 
-        return game_teams_arr
+        return Response(game_teams_arr)
 
     @ paginate
     @ action(detail=False)
