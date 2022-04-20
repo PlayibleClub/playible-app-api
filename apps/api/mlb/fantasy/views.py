@@ -294,7 +294,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         create_and_sign_tx(msgs)
 
-        return Response(msgs)
+        return Response("ok")
 
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
@@ -337,7 +337,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                     'name': 'Admin',
                     'fantasy_score': 0,
                     'account': {
-                        'wallet_addr': 'terra1jrg2hv92xpjl4wwgd84jcm4cs2pfmzdxl6y2sx'
+                        'wallet_addr': ADMIN_WALLET
                     }
                 })
 
