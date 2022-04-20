@@ -322,7 +322,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
     @ action(detail=True)
     def leaderboard(self, request, id=None):
         game = self.get_object()
-        game_teams = game.teams.order_by('-fantasy_score')
+        game_teams = game.teams.order_by('-fantasy_score')[:10]
         game_teams_arr = []
 
         for idx, game_team in enumerate(game_teams):
