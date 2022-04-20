@@ -294,7 +294,7 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
 
         create_and_sign_tx(msgs)
 
-        return Response(msgs)
+        return Response("ok")
 
 
 class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
