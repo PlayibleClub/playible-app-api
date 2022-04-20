@@ -337,7 +337,7 @@ class GameViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Creat
                     'name': 'Admin',
                     'fantasy_score': 0,
                     'account': {
-                        'wallet_addr': 'terra1jrg2hv92xpjl4wwgd84jcm4cs2pfmzdxl6y2sx'
+                        'wallet_addr': ADMIN_WALLET
                     }
                 })
 
