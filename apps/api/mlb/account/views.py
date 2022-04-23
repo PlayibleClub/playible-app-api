@@ -190,12 +190,12 @@ class AthleteTokenView(generics.GenericAPIView):
                 "player_addr": wallet
             }
         }
-        locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
+        # locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
 
         try:
             owned_tokens = owned_tokens_response
-            locked_tokens = locked_tokens_response
-            # locked_tokens = []
+            # locked_tokens = locked_tokens_response
+            locked_tokens = []
 
             athlete_ids = []
             athletes = []
