@@ -112,6 +112,15 @@ def update_mlb_athlete_stats():
                         hit_by_pitch=athlete.get('hit_by_pitch'),
                         stolen_bases=athlete.get('stolen_bases'),
                         position=athlete.get('position'),
+                        pitching_total_innings_pitched=athlete.get('pitching_total_innings_pitched'),
+                        pitching_strikeouts=athlete.get('pitching_strikeouts'),
+                        pitching_hits_allowed=athlete.get('pitching_hits_allowed'),
+                        pitching_walks_allowed=athlete.get('pitching_walks_allowed'),
+                        pitching_earned_runs_allowed=athlete.get('pitching_earned_runs_allowed'),
+                        pitching_hits_by_pitch_allowed=athlete.get('pitching_hits_by_pitch_allowed'),
+                        pitching_complete_games=athlete.get('pitching_complete_games'),
+                        pitching_shutouts=athlete.get('pitching_shutouts'),
+                        pitching_no_hitters=athlete.get('pitching_no_hitters'),
                     )
 
                     new_athlete_stats.append(athlete_stat_obj)
@@ -126,6 +135,15 @@ def update_mlb_athlete_stats():
                     athlete_stat_obj.hit_by_pitch = athlete.get('hit_by_pitch')
                     athlete_stat_obj.stolen_bases = athlete.get('stolen_bases')
                     athlete_stat_obj.position = athlete.get('position')
+                    athlete_stat_obj.pitching_total_innings_pitched = athlete.get('pitching_total_innings_pitched')
+                    athlete_stat_obj.pitching_strikeouts = athlete.get('pitching_strikeouts')
+                    athlete_stat_obj.pitching_hits_allowed = athlete.get('pitching_hits_allowed')
+                    athlete_stat_obj.pitching_walks_allowed = athlete.get('pitching_walks_allowed')
+                    athlete_stat_obj.pitching_earned_runs_allowed = athlete.get('pitching_earned_runs_allowed')
+                    athlete_stat_obj.pitching_hits_by_pitch_allowed = athlete.get('pitching_hits_by_pitch_allowed')
+                    athlete_stat_obj.pitching_complete_games = athlete.get('pitching_complete_games')
+                    athlete_stat_obj.pitching_shutouts = athlete.get('pitching_shutouts')
+                    athlete_stat_obj.pitching_no_hitters = athlete.get('pitching_no_hitters')
 
                     existing_athlete_stats.append(athlete_stat_obj)
 
@@ -135,7 +153,9 @@ def update_mlb_athlete_stats():
             GameAthleteStat.objects.bulk_update(
                 existing_athlete_stats,
                 ['fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
-                    'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position'],
+                 'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position',
+                 'pitching_total_innings_pitched', 'pitching_strikeouts', 'pitching_hits_allowed', 'pitching_walks_allowed',
+                 'pitching_earned_runs_allowed', 'pitching_hits_by_pitch_allowed', 'pitching_complete_games', 'pitching_shutouts', 'pitching_no_hitters'],
                 20
             )
 

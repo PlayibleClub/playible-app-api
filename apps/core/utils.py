@@ -66,6 +66,15 @@ def parse_athlete_stat_data(data):
             "walks": athlete.get('Walks'),
             "hit_by_pitch": athlete.get('HitByPitch'),
             "stolen_bases": athlete.get('StolenBases'),
+            "pitching_total_innings_pitched": athlete.get('InningsPitchedFull') + athlete.get('InningsPitchedOuts'),
+            "pitching_strikeouts": athlete.get('PitchingStrikeouts'),
+            "pitching_hits_allowed": athlete.get('PitchingHits'),
+            "pitching_walks_allowed": athlete.get('PitchingWalks'),
+            "pitching_earned_runs_allowed": athlete.get('PitchingEarnedRuns'),
+            "pitching_hits_by_pitch_allowed": athlete.get('PitchingHitByPitch'),
+            "pitching_complete_games": athlete.get('PitchingCompleteGames'),
+            "pitching_shutouts": athlete.get('PitchingShutOuts'),
+            "pitching_no_hitters": athlete.get('PitchingNoHitters'),
             "position": athlete.get('Position'),
         })
 

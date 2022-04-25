@@ -339,4 +339,6 @@ class AthleteStatDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = GameAthleteStat
         fields = ['athlete', 'fantasy_score', 'singles', 'doubles', 'triples', 'home_runs',
-                  'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'position']
+                  'runs_batted_in', 'walks', 'hit_by_pitch', 'stolen_bases', 'pitching_total_innings_pitched', 'pitching_strikeouts',
+                  'pitching_hits_allowed', 'pitching_walks_allowed', 'pitching_earned_runs_allowed', 'pitching_hits_by_pitch_allowed',
+                  'pitching_complete_games', 'pitching_shutouts', 'pitching_no_hitters', 'position']
