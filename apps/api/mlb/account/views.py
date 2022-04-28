@@ -165,7 +165,7 @@ class AthleteTokenView(generics.GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = serializers.AssetSerializer
 
-    def get(self, request, wallet=None, contract=None):
+    def get(self, request, wallet=None, contract=None, game_contract=None):
         def get_athlete_id(token):
             attributes = token['token_info']['info']['extension']['attributes']
 
@@ -190,7 +190,7 @@ class AthleteTokenView(generics.GenericAPIView):
                 "player_addr": wallet
             }
         }
-        locked_tokens_response = terra.query_contract(GAME_CONTRACT, locked_tokens_msg)
+        locked_tokens_response = terra.query_contract(game_contract, locked_tokens_msg)
 
         try:
             owned_tokens = owned_tokens_response

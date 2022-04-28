@@ -193,7 +193,8 @@ class AthleteViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.
         season = now.strftime('%Y').upper()
         # season = '2021'
 
-        athlete_stats = GameAthleteStat.objects.filter(Q(season=season)).order_by('-fantasy_score')
+        athlete_stats = GameAthleteStat.objects.filter(Q(season=season) & Q(
+            athlete__team__sport=SportType.MLB)).order_by('-fantasy_score')
 
         return athlete_stats
 
