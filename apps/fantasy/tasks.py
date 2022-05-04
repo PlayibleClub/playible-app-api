@@ -284,7 +284,8 @@ def generate_athlete_images():
     output_dir = 'athlete_images/'
     file_extension = '.svg'
 
-    athletes = Athlete.objects.all().order_by('pk')
+    # athletes = Athlete.objects.all().order_by('pk')
+    athletes = Athlete.objects.filter(id__gt=844).order_by('pk')
 
     for athlete in athletes:
         athlete_id = str(athlete.id)
@@ -332,7 +333,8 @@ def generate_athlete_animations():
     output_dir = 'athlete_animations/'
     file_extension = '.svg'
 
-    athletes = Athlete.objects.all().order_by('pk')
+    # athletes = Athlete.objects.all().order_by('pk')
+    athletes = Athlete.objects.filter(id__gt=844).order_by('pk')
 
     for athlete in athletes:
         athlete_id = str(athlete.id)
