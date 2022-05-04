@@ -274,7 +274,68 @@ def init_mlb_athletes_data_csv():
                     'jersey': jersey,
                     'is_active': is_active,
                     'is_injured': is_injured,
-                    'team': team
+                    'team': team,
+                    'nft_image': None,
+                    'animation': None,
+                    'jersey_image': None,
+                    'name_image': None,
+                    'position_image': None,
+                }
+            )
+
+
+@celery_app.task()
+def sync_mlb_athletes_data_csv():
+    """Task for initializing all athlete data based on csv file"""
+    with open('athletes.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        line_count = 0
+
+        for row in csv_reader:
+            api_id = row[0]
+            first_name = row[9]
+            last_name = row[10]
+            position = row[7]
+            salary = row[22]
+            jersey = row[5]
+            team_key = row[4]
+            is_active = row[2]
+            is_injured = row[31]
+
+            if is_active == 'Active':
+                is_active = True
+            else:
+                is_active = False
+
+            if is_injured == 'null':
+                is_injured = False
+            else:
+                is_injured = True
+
+            if salary == 'null':
+                salary = None
+
+            if jersey == 'null':
+                jersey = None
+
+            team = Team.objects.get(key=team_key)
+
+            Athlete.objects.get_or_create(
+                api_id=api_id,
+                defaults={
+                    'first_name': first_name,
+                    'last_name': last_name,
+                    'position': position,
+                    'salary': salary,
+                    'jersey': jersey,
+                    'is_active': is_active,
+                    'is_injured': is_injured,
+                    'team': team,
+                    'nft_image': None,
+                    'animation': None,
+                    'jersey_image': None,
+                    'name_image': None,
+                    'position_image': None,
                 }
             )
 
