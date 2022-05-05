@@ -211,6 +211,15 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['walks'] = 0
                     token['hit_by_pitch'] = 0
                     token['stolen_bases'] = 0
+                    token['pitching_total_innings_pitched'] = 0
+                    token['pitching_strikeouts'] = 0
+                    token['pitching_hits_allowed'] = 0
+                    token['pitching_walks_allowed'] = 0
+                    token['pitching_earned_runs_allowed'] = 0
+                    token['pitching_hits_by_pitch_allowed'] = 0
+                    token['pitching_complete_games'] = 0
+                    token['pitching_shutouts'] = 0
+                    token['pitching_no_hitters'] = 0
                     token['position'] = None
                     token['nft_image'] = None
                     token['is_locked'] = False
@@ -226,6 +235,15 @@ class AthleteTokenView(generics.GenericAPIView):
                     token['walks'] = 0
                     token['hit_by_pitch'] = 0
                     token['stolen_bases'] = 0
+                    token['pitching_total_innings_pitched'] = 0
+                    token['pitching_strikeouts'] = 0
+                    token['pitching_hits_allowed'] = 0
+                    token['pitching_walks_allowed'] = 0
+                    token['pitching_earned_runs_allowed'] = 0
+                    token['pitching_hits_by_pitch_allowed'] = 0
+                    token['pitching_complete_games'] = 0
+                    token['pitching_shutouts'] = 0
+                    token['pitching_no_hitters'] = 0
                     token['position'] = None
                     token['nft_image'] = None
                     token['is_locked'] = True
@@ -262,6 +280,15 @@ class AthleteTokenView(generics.GenericAPIView):
                         token['walks'] += athlete_stat.walks
                         token['hit_by_pitch'] += athlete_stat.hit_by_pitch
                         token['stolen_bases'] += athlete_stat.stolen_bases
+                        token['pitching_total_innings_pitched'] += athlete_stat.pitching_total_innings_pitched
+                        token['pitching_strikeouts'] += athlete_stat.pitching_strikeouts
+                        token['pitching_hits_allowed'] += athlete_stat.pitching_hits_allowed
+                        token['pitching_walks_allowed'] += athlete_stat.pitching_walks_allowed
+                        token['pitching_earned_runs_allowed'] += athlete_stat.pitching_earned_runs_allowed
+                        token['pitching_hits_by_pitch_allowed'] += athlete_stat.pitching_hits_by_pitch_allowed
+                        token['pitching_complete_games'] += athlete_stat.pitching_complete_games
+                        token['pitching_shutouts'] += athlete_stat.pitching_shutouts
+                        token['pitching_no_hitters'] += athlete_stat.pitching_no_hitters
 
                     token['position'] = athlete.position
 

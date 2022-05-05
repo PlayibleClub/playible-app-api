@@ -172,6 +172,15 @@ class GameAthleteStat(BaseInfo):
     walks = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     hit_by_pitch = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     stolen_bases = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_total_innings_pitched = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_strikeouts = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_hits_allowed = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_walks_allowed = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_earned_runs_allowed = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_hits_by_pitch_allowed = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_complete_games = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_shutouts = models.DecimalField(max_digits=19, decimal_places=2, default=0)
+    pitching_no_hitters = models.DecimalField(max_digits=19, decimal_places=2, default=0)
     position = models.CharField(max_length=155)
 
     class Meta:
